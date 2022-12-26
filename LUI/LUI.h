@@ -17,6 +17,7 @@ namespace lui {
 		void start(void(*)(), void(*)(), void(*)(sf::Event));
 		Form* createForm();
 		sf::RenderWindow renderWindow;
+		bool blockRender = false;
 	private:
 		std::vector<Form*> luiForms;
 		void render();

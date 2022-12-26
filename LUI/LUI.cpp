@@ -28,7 +28,13 @@ namespace lui {
 						)
 					);
 				}
+
+
 				usrControl(event);
+				for (int i = 0; i < luiForms.size(); i++) {
+					luiForms.at(i)->update(event);
+				}
+
 
 				if (event.type == Event::Closed)
 					renderWindow.close();
@@ -49,11 +55,13 @@ namespace lui {
 
 				}
 			}
-			renderWindow.clear(Color(0, 0, 0));
-			usrUpdate();
-			render();
+			if (!blockRender) {
+				renderWindow.clear(Color(0, 0, 0));
+				usrUpdate();
+				render();
 
-			renderWindow.display();
+				renderWindow.display();
+			}
 		}
 
 	}

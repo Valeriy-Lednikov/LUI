@@ -22,23 +22,36 @@ namespace lui {
 		int getId();
 		void setRenderWindow(sf::RenderWindow *renderWindow);
 		void setTitleText(std::string text);
-		void setSize(sf::Vector2i size);
-		void setPosition(sf::Vector2i position);
+		
+		void setSize(sf::Vector2f size);
+		
+		void setPosition(sf::Vector2f position);
+		sf::Vector2f getPosition();
+		
 		bool setFlag(std::string name, bool state);
+		bool getFlagState(std::string name);
 
+		void setTransparency(short transparency);
+		int getTransparency();
 
 		sf::RenderWindow *renderWindow = NULL;
 	private:
 		int id = ++CountForms;
 		std::string titleText = "";
-		sf::Vector2i position = sf::Vector2i(0, 0);
+		sf::Vector2f position = sf::Vector2f(0, 0);
 		sf::Vector2f size = sf::Vector2f(600, 300);
+		short transparency = 255;
+
 
 		//flags
+		bool isVisiable = true;
+		//flag-style
 		bool f_Title = true;
 		bool f_TitleContols = false;
 		bool f_TitlePick = true;
 		bool f_FormPick = false;
 	};
+
+
 
 }

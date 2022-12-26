@@ -7,7 +7,10 @@ namespace lui {
 	void LUI::start(void(*usrStart)(),void(*usrUpdate)(), void(*usrControl)(sf::Event))
 	{
 		Resources::getInstance()->initialization();
-		renderWindow.create(sf::VideoMode(1400, 800), "LUI");
+		renderWindow.create(sf::VideoMode(800, 600), "LUI", sf::Style::None);
+		renderWindow.setFramerateLimit(100);
+		
+
 		usrStart();
 		while (renderWindow.isOpen())
 		{

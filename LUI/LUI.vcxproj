@@ -168,7 +168,6 @@
     <Font Include="..\..\..\P3\MPCV\MPCV\arial.ttf" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Header.h" />
     <ClInclude Include="LUI-forms.h" />
     <ClInclude Include="LUI.h" />
     <ClInclude Include="LUI-Resources.h" />

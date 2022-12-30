@@ -7,9 +7,11 @@ namespace lui {
 	void LUI::start(void(*usrStart)(),void(*usrUpdate)(), void(*usrControl)(sf::Event))
 	{
 		Resources::getInstance()->initialization();
-		renderWindow.create(sf::VideoMode(800, 600), "LUI", sf::Style::None);
+		renderWindow.create(sf::VideoMode(800, 600), "LUI");
 		renderWindow.setFramerateLimit(100);
-		
+		HWND hwnd = renderWindow.getSystemHandle();
+		LONG_PTR new_style = WS_SYSMENU;
+			SetWindowLong(hwnd, GWL_EXSTYLE,new_style);
 
 		usrStart();
 		while (renderWindow.isOpen())
@@ -45,14 +47,6 @@ namespace lui {
 						renderWindow.close();
 					}
 
-					if (event.key.code == sf::Keyboard::D)
-					{
-						//std::cout << &renderWindow << "\t" << lui::TargetWindow << "\n";
-						//form1.draw();
-
-					}
-
-
 				}
 			}
 			if (!blockRender) {
@@ -77,7 +71,7 @@ namespace lui {
 	{
 		//std::cout << "size vector - " << luiForms.size() << "\n";
 		for (int i = 0; i < luiForms.size(); i++) {
-			luiForms.at(i)->draw();
+			luiForms.at(i)->draw(); 
 			//std::cout << "render\n";
 		}
 	}

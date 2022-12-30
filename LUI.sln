@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.32014.148
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MPCV", "MPCV\MPCV.vcxproj", "{B6D1DD94-64BB-4487-8C18-2B1EC5B48D2E}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LUI", "LUI\LUI.vcxproj", "{B6D1DD94-64BB-4487-8C18-2B1EC5B48D2E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -26,6 +26,6 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {7B22CDA9-C8C4-49A0-AB72-9A7AC76AEFFB}
+		SolutionGuid = {070195BF-F045-472D-87E6-BBA7A6716717}
 	EndGlobalSection
 EndGlobal

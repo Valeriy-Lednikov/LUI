@@ -50,6 +50,7 @@ namespace lui {
 		bool isVisiable = true;
 		//action flags and data
 		bool a_Drag = false;
+		bool a_Resize = false;
 		sf::Vector2i dragPoint;
 		//flag-style
 		bool f_TitleIsTitleWindow = false;//title this form = title window

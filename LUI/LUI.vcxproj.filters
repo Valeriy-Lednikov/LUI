@@ -40,9 +40,6 @@
     <ClInclude Include="LUI-forms.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="Header.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
     <ClInclude Include="LUI-Resources.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>

@@ -8,6 +8,29 @@
 namespace lui {
 	static int CountForms = 0;
 	
+	enum class Attach {
+		UP,
+		RIGHT_UP,
+		RIGHT,
+		RIGHT_DOWN,
+		DOWN,
+		LEFT_DOWN,
+		LEFT,
+		LEFT_UP,
+		CENTER
+	};
+
+	enum class ElementType {
+		BUTTON
+	};
+
+	class Form;
+	class Component;
+	class Button;
+
+
+
+
 
 	class Form{
 	public:
@@ -37,8 +60,12 @@ namespace lui {
 		void setCountComponents(int count);
 
 		sf::RenderWindow *renderWindow = NULL;
+
+		void createElement(ElementType type);
 	private:
 		int countComponents = 0;
+		std::vector<Component*> components;
+
 		int id = ++CountForms;
 		std::string titleText = "";
 		sf::Vector2f position = sf::Vector2f(0, 0);
@@ -65,29 +92,47 @@ namespace lui {
 
 		bool f_TitlePick = true;
 		bool f_FormPick = false;
+
+
 	};
 
-	class Component : public Form
+
+
+
+
+
+
+	class Component
 	{
 	public:
 
-		Component(sf::Vector2f position, sf::Vector2f size, bool isActive, bool isVisible);
-		Component(sf::Vector2f position, sf::Vector2f size);
+		Component(sf::Vector2f position, sf::Vector2f size, bool isActive, bool isVisible, Form *attachToForm) ;
+		Component(sf::Vector2f position, sf::Vector2f size, Form* attachToForm);
 		virtual void draw() {}
 		virtual ~Component() = default;
+		
+		int getId();
 
 		sf::Vector2f position = sf::Vector2f(0, 0);
 		sf::Vector2f size = sf::Vector2f(0, 0);
 		bool active = true;
 		bool visible = true;
 		int id = 0;
-
+		int zIndex = 1;
+		Attach attach = Attach::LEFT_UP;
+		Form* attachToForm;
 	};
 
-	class Button :private Component {
+	class Button :public Component {
 	public:
+		void draw();
+		Button(sf::Vector2f position, sf::Vector2f size, Form* attachToForm);
+		
 	private:
-
+		bool state = false;
+		bool isToggle = false;
+		sf::Text text;
+		int fontSize = 10;
 	};
 
 }

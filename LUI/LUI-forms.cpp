@@ -40,6 +40,17 @@ void lui::Form::draw()
 	else {
 		std::cout << "Error - renderWindow not found\n";
 	}
+	//render components ---------------------------------------------------------
+	for (int i = 0; i < components.size(); i++) {
+		if (dynamic_cast<Button*>(components[i]))
+		{
+			Button* button = dynamic_cast<Button*>(components[i]);
+			button->draw();
+		}
+	}
+
+
+
 }
 
 void lui::Form::update(sf::Event event)
@@ -194,20 +205,142 @@ void lui::Form::setCountComponents(int count)
 	this->countComponents = count;
 }
 
-lui::Component::Component(sf::Vector2f position, sf::Vector2f size, bool isActive, bool isVisible)
+
+
+
+void lui::Form::createElement(ElementType type)
 {
+	if (type == ElementType::BUTTON) {
+		components.push_back(new Button(sf::Vector2f(30,30), sf::Vector2f(50,20), this));
+		components.push_back(new Button(sf::Vector2f(30, 50), sf::Vector2f(50, 20), this));
+	}
+}
+
+//######################################################################################################################
+//#########################################COMPONENTS###################################################################
+//######################################################################################################################
+
+lui::Component::Component(sf::Vector2f position, sf::Vector2f size, bool isActive, bool isVisible, Form* attachToForm) 
+{
+	this->attachToForm = attachToForm;
 	this->position = position;
 	this->size = size;
 	this->active = isActive;
 	this->visible = isVisible;
-	this->id = getCountComponents() + 1;
-	setCountComponents(id);
+	this->id = this->attachToForm->getCountComponents() +1;
+	this->attachToForm->setCountComponents(id);
 }
 
-lui::Component::Component(sf::Vector2f position, sf::Vector2f size)
+lui::Component::Component(sf::Vector2f position, sf::Vector2f size, Form* attachToForm)
 {
+	this->attachToForm = attachToForm;
 	this->position = position;
 	this->size = size;
-	this->id = getCountComponents() + 1;
-	setCountComponents(id);
+	this->id = this->attachToForm->getCountComponents() + 1;
+	this->attachToForm->setCountComponents(id);
+}
+
+int lui::Component::getId()
+{
+	return id;
+}
+
+
+
+//######################################################################################################################
+//#########################################BUTTON#######################################################################
+//######################################################################################################################
+
+void lui::Button::draw()
+{
+	sf::RectangleShape fon(sf::Vector2f(size.x, size.y));
+	fon.setPosition(position.x, position.y);
+	fon.setFillColor(sf::Color(0, 0, 0));
+	this->attachToForm->renderWindow->draw(fon);
+
+	fon = sf::RectangleShape(sf::Vector2f(size.x - 4, size.y - 4));
+	fon.setPosition(position.x + 3, position.y + 3);
+	fon.setFillColor(sf::Color(88, 56, 48));
+	this->attachToForm->renderWindow->draw(fon);
+
+	text.setCharacterSize(fontSize);
+	sf::Vector2i Center = sf::Vector2i((position.x + size.x / 2), (position.y + size.y / 2));
+	Center = sf::Vector2i(Center.x - text.getGlobalBounds().width / 2, (Center.y - text.getGlobalBounds().height / 2) - 3);
+	text.setPosition(Center.x, Center.y);
+	if (state) {
+		text.setPosition(Center.x + 1, Center.y + 1);
+	}
+
+	this->attachToForm->renderWindow->draw(text);
+
+
+	sf::Color ColorA = sf::Color(255, 255, 255);
+	sf::Color ColorB = sf::Color(128, 128, 128);
+	if (state) {
+		ColorB = sf::Color(255, 255, 255);
+		ColorA = sf::Color(128, 128, 128);
+	}
+
+
+	sf::RectangleShape line;
+	line = sf::RectangleShape(sf::Vector2f(size.x - 2, 1)); //Up Up Up
+	line.setFillColor(ColorA);
+	line.setPosition(position.x + 1, position.y + 1);
+	this->attachToForm->renderWindow->draw(line);
+
+	line = sf::RectangleShape(sf::Vector2f(size.y - 2, 1)); //left Up Up
+	line.setFillColor(ColorA);
+	line.setPosition(position.x + 2, position.y + 1);
+	line.rotate(90);
+	this->attachToForm->renderWindow->draw(line);
+
+	line = sf::RectangleShape(sf::Vector2f(size.x - 4, 1)); //Up down Up
+	line.setFillColor(ColorA);
+	line.setPosition(position.x + 2, position.y + 2);
+	this->attachToForm->renderWindow->draw(line);
+
+	line = sf::RectangleShape(sf::Vector2f(size.y - 4, 1)); //left down Up
+	line.setFillColor(ColorA);
+	line.setPosition(position.x + 3, position.y + 2);
+	line.rotate(90);
+	this->attachToForm->renderWindow->draw(line);
+
+	////////////////////////////////////////////////////////////////////////////////////
+
+	line = sf::RectangleShape(sf::Vector2f(size.x - 3, 1));
+	line.setFillColor(ColorB);
+	line.setPosition(position.x - 1 + size.x, position.y - 1 + size.y);
+	line.rotate(180);
+	this->attachToForm->renderWindow->draw(line);
+
+	line = sf::RectangleShape(sf::Vector2f(size.x - 5, 1));
+	line.setFillColor(ColorB);
+	line.setPosition(position.x - 2 + size.x, position.y - 2 + size.y);
+	line.rotate(180);
+	this->attachToForm->renderWindow->draw(line);
+
+
+
+	line = sf::RectangleShape(sf::Vector2f(size.y - 3, 1));
+	line.setFillColor(ColorB);
+	line.setPosition(position.x - 2 + size.x, position.y - 1 + size.y);
+	line.rotate(270);
+	this->attachToForm->renderWindow->draw(line);
+
+
+	line = sf::RectangleShape(sf::Vector2f(size.y - 4, 1));
+	line.setFillColor(ColorB);
+	line.setPosition(position.x - 3 + size.x, position.y - 1 + size.y);
+	line.rotate(270);
+	this->attachToForm->renderWindow->draw(line);
+
+
+
+
+}
+
+lui::Button::Button(sf::Vector2f position, sf::Vector2f size, Form* attachToForm) : Component(position, size, attachToForm)
+{
+	text.setFont(Resources::getInstance()->getFontByID(0));
+	text.setString("button" + std::to_string(id));
 }

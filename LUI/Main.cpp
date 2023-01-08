@@ -6,6 +6,7 @@ lui::Form* myForm;
 void Start() {
 	myForm = ui.createForm();
 	myForm->setTitleText("Hi! This is Form!");
+	myForm->createElement(lui::ElementType::BUTTON);
 }
 
 void Control(sf::Event event) {

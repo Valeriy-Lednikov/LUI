@@ -32,4 +32,8 @@ namespace lui {
 		std::vector<sf::Font> fonts ;
 		Resources(){}
 	};
+
+
+
+
 }

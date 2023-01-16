@@ -7,7 +7,7 @@ namespace lui {
 	void LUI::start(void(*usrStart)(),void(*usrUpdate)(), void(*usrControl)(sf::Event))
 	{
 		Resources::getInstance()->initialization();
-		renderWindow.create(sf::VideoMode(800, 600), "LUI");
+		renderWindow.create(sf::VideoMode(800, 600), "LUI"); //sf::Style::None);
 		renderWindow.setFramerateLimit(100);
 		HWND hwnd = renderWindow.getSystemHandle();
 		LONG_PTR new_style = WS_SYSMENU;
@@ -31,7 +31,7 @@ namespace lui {
 					);
 				}
 
-
+				updateControll(event);
 				usrControl(event);
 				for (int i = 0; i < luiForms.size(); i++) {
 					luiForms.at(i)->update(event);
@@ -67,6 +67,7 @@ namespace lui {
 		luiForms.push_back(form);
 		return form;
 	}
+	
 	void LUI::render()
 	{
 		//std::cout << "size vector - " << luiForms.size() << "\n";
@@ -74,5 +75,18 @@ namespace lui {
 			luiForms.at(i)->draw(); 
 			//std::cout << "render\n";
 		}
+	}
+	void LUI::updateControll(sf::Event event)
+	{
+		//if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)) {
+		//	leftMouse = true;
+		//}
+		//else {
+		//	if(leftMouse = true){
+		//		false;
+		//	}
+		//}
+		////if (PointInRect(sf::Mouse::getPosition(*Window), Components[i]->Position, Components[i]->Position + Components[i]->Size)) {
+
 	}
 }

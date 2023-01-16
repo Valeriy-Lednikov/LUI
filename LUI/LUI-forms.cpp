@@ -1,5 +1,21 @@
 #pragma once
 #include "LUI-forms.h"
+class Form;
+class Component;
+class Button;
+
+bool lui::PointInRect(sf::Vector2i point, sf::Vector2i rectA, sf::Vector2i rectB)
+{
+	if (point.x > rectA.x && point.x<rectB.x && point.y>rectA.y && point.y < rectB.y) {
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+
 
 lui::Form::Form(sf::RenderWindow* renderWindow)
 {
@@ -46,6 +62,10 @@ void lui::Form::draw()
 		{
 			Button* button = dynamic_cast<Button*>(components[i]);
 			button->draw();
+		}
+		if (dynamic_cast<TextField*>(components[i])) {
+			TextField* tf = dynamic_cast<TextField*>(components[i]);
+			tf->draw();
 		}
 	}
 
@@ -117,6 +137,61 @@ void lui::Form::update(sf::Event event)
 			}
 		}
 	}
+
+
+	//UpdateComponents
+	//###########################################################################################################33
+
+	for (int i = 0; i < components.size(); i++) {
+		if (dynamic_cast<Button*>(components[i]))
+		{
+			Button* button = dynamic_cast<Button*>(components[i]);
+
+
+			sf::Vector2i componentPosition = sf::Vector2i(components[i]->position);
+			if (PointInRect(sf::Mouse::getPosition(*renderWindow), componentPosition, componentPosition + sf::Vector2i(components[i]->size))) {
+				if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)) {
+					focus = components[i];
+					if (button->state == false) {
+						//click
+						Event_function Ef = button->findEvent(lui::Events::PRESS);
+						if(Ef.function != NULL) {
+							Ef.function();
+						}
+					}
+					button->state = true;
+				}
+				else {
+					button->state = false;
+				}
+				if (event.type == sf::Event::MouseButtonReleased && event.mouseButton.button == sf::Mouse::Left) {
+					Event_function Ef = button->findEvent(lui::Events::RELEASE);
+					if (Ef.function != NULL) {
+						Ef.function();
+					}
+					Ef = button->findEvent(lui::Events::CLICK);
+					if (Ef.function != NULL) {
+						Ef.function();
+					}
+					continue;
+				}
+			}
+			if (event.type == sf::Event::MouseButtonReleased && event.mouseButton.button == sf::Mouse::Left) {
+				if (focus != NULL) {
+					button->state = false;
+					Event_function Ef = button->findEvent(lui::Events::RELEASE);
+					if (Ef.function != NULL) {
+						Ef.function();
+					}
+				}
+			}
+		}
+
+
+	}
+
+
+
 }
 
 int lui::Form::getId()
@@ -205,16 +280,30 @@ void lui::Form::setCountComponents(int count)
 	this->countComponents = count;
 }
 
-
-
-
-void lui::Form::createElement(ElementType type)
+int lui::Form::createElement(ElementType type)
 {
-	if (type == ElementType::BUTTON) {
-		components.push_back(new Button(sf::Vector2f(30,30), sf::Vector2f(50,20), this));
-		components.push_back(new Button(sf::Vector2f(30, 50), sf::Vector2f(50, 20), this));
-	}
+	
+		if (type == ElementType::BUTTON) {
+			Button* t = new Button(sf::Vector2f(30, 30), sf::Vector2f(50, 20), this);
+			
+			components.push_back(t);
+			return t->getId();
+			
+		}
+	
 }
+
+void lui::Form::attachComponent(Component* element)
+{
+	element->id = this->getCountComponents() + 1;
+	components.push_back(element);
+	countComponents++;
+}
+
+
+
+
+
 
 //######################################################################################################################
 //#########################################COMPONENTS###################################################################
@@ -260,15 +349,16 @@ void lui::Button::draw()
 
 	fon = sf::RectangleShape(sf::Vector2f(size.x - 4, size.y - 4));
 	fon.setPosition(position.x + 3, position.y + 3);
-	fon.setFillColor(sf::Color(88, 56, 48));
+	fon.setFillColor(backgroundColor);
 	this->attachToForm->renderWindow->draw(fon);
 
 	text.setCharacterSize(fontSize);
+	text.setFillColor(fontColor);
 	sf::Vector2i Center = sf::Vector2i((position.x + size.x / 2), (position.y + size.y / 2));
 	Center = sf::Vector2i(Center.x - text.getGlobalBounds().width / 2, (Center.y - text.getGlobalBounds().height / 2) - 3);
 	text.setPosition(Center.x, Center.y);
 	if (state) {
-		text.setPosition(Center.x + 1, Center.y + 1);
+		text.setPosition(Center.x - 1, Center.y - 1);
 	}
 
 	this->attachToForm->renderWindow->draw(text);
@@ -335,12 +425,101 @@ void lui::Button::draw()
 	this->attachToForm->renderWindow->draw(line);
 
 
-
+	/*if(activateFuntion != NULL)
+		activateFuntion();*/
 
 }
 
 lui::Button::Button(sf::Vector2f position, sf::Vector2f size, Form* attachToForm) : Component(position, size, attachToForm)
 {
-	text.setFont(Resources::getInstance()->getFontByID(0));
-	text.setString("button" + std::to_string(id));
+	//text.setFont(Resources::getInstance()->getFontByID(0));
+	//text.setString("button" + std::to_string(id));
+	//activateFuntion = NULL;
+}
+
+void lui::Button::attachEvent(void(*function)(), Events event)
+{
+	Event_function* ev = new Event_function();
+	ev->event = event;
+	ev->function = function;
+	events.push_back(*ev);
+}
+
+void lui::Button::initialization(sf::Vector2f size, sf::Vector2f position, std::string text)
+{
+	this->text.setFont(Resources::getInstance()->getFontByID(0));
+	this->size = size;
+	this->position = position;
+	this->text.setString(text);
+}
+
+void lui::Button::initialization(sf::Vector2f size, sf::Vector2f position, std::string text, Form* attachToForm)
+{
+	this->text.setFont(Resources::getInstance()->getFontByID(0));
+	this->size = size;
+	this->position = position;
+	this->text.setString(text);
+	this->attachToForm = attachToForm;
+}
+
+lui::Event_function lui::Button::findEvent(lui::Events event)
+{
+	Event_function funk;
+	funk.function = NULL;
+	for (int i = 0; i < this->events.size(); i++) {
+		if (this->events[i].event == event) {
+			funk.event = this->events[i].event;
+			funk.function = this->events[i].function;
+		}
+	}
+	return funk;
+}
+
+
+
+
+//######################################################################################################################
+//#########################################TEXT FIELD###################################################################
+//######################################################################################################################
+
+
+void lui::TextField::draw()
+{
+	sf::RectangleShape fon(sf::Vector2f(size.x, size.y));
+	fon.setPosition(position.x, position.y);
+	fon.setFillColor(sf::Color(0, 0, 0));
+	this->attachToForm->renderWindow->draw(fon);
+
+	fon.setPosition(position.x+1, position.y+1);
+	fon.setSize( sf::Vector2f(size.x - 2, size.y - 2));
+	fon.setFillColor(sf::Color(64, 128, 128));
+	this->attachToForm->renderWindow->draw(fon);
+
+	backgroundText.setCharacterSize(fontSize);
+	backgroundText.setFillColor(sf::Color(255,255,255,128));
+	sf::Vector2i Center = sf::Vector2i((position.x), (position.y + size.y / 2));
+	Center = sf::Vector2i(Center.x + backgroundText.getGlobalBounds().width / 2, (Center.y - backgroundText.getGlobalBounds().height / 2) - 3);
+	backgroundText.setPosition(Center.x, Center.y);
+	this->attachToForm->renderWindow->draw(backgroundText);
+
+}
+
+
+
+lui::TextField::TextField(sf::Vector2f position, sf::Vector2f size, Form* attachToForm) : Component(position, size, attachToForm)
+{
+	this->text.setFont(Resources::getInstance()->getFontByID(0));
+	this->size = size;
+	this->position = position;
+
+}
+
+void lui::TextField::initialization(sf::Vector2f size, sf::Vector2f position, std::string backgroundText, Form* attachToForm)
+{
+	this->text.setFont(Resources::getInstance()->getFontByID(0));
+	this->backgroundText.setFont(Resources::getInstance()->getFontByID(0));
+	this->size = size;
+	this->position = position;
+	this->backgroundText.setString(backgroundText);
+	this->attachToForm = attachToForm;
 }

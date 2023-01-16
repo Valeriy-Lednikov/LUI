@@ -5,9 +5,13 @@
 #include <vector>
 #include <SFML/Window/Mouse.hpp>
 #include "LUI-Resources.h";
+
+
 namespace lui {
 	static int CountForms = 0;
-	
+	bool PointInRect(sf::Vector2i point, sf::Vector2i rectA, sf::Vector2i rectB);
+
+
 	enum class Attach {
 		UP,
 		RIGHT_UP,
@@ -23,6 +27,28 @@ namespace lui {
 	enum class ElementType {
 		BUTTON
 	};
+
+	enum class Events
+	{
+		MOUSE_IN,
+		MOUSE_OUT,
+		MOUSE_ON,
+		PRESS,
+		RELEASE,
+		CLICK
+	};
+	struct Event_function
+	{
+		Events event;
+		void(*function)();
+	};
+
+
+
+
+
+
+
 
 	class Form;
 	class Component;
@@ -61,16 +87,21 @@ namespace lui {
 
 		sf::RenderWindow *renderWindow = NULL;
 
-		void createElement(ElementType type);
+		int createElement(ElementType type);
+		void attachComponent(Component* element);
+		
+
 	private:
 		int countComponents = 0;
 		std::vector<Component*> components;
+		Component* focus = NULL;
 
 		int id = ++CountForms;
 		std::string titleText = "";
 		sf::Vector2f position = sf::Vector2f(0, 0);
 		sf::Vector2f size = sf::Vector2f(600, 300);
 		short transparency = 255;
+
 
 
 		//flags
@@ -108,6 +139,7 @@ namespace lui {
 
 		Component(sf::Vector2f position, sf::Vector2f size, bool isActive, bool isVisible, Form *attachToForm) ;
 		Component(sf::Vector2f position, sf::Vector2f size, Form* attachToForm);
+		Component(){};
 		virtual void draw() {}
 		virtual ~Component() = default;
 		
@@ -123,16 +155,40 @@ namespace lui {
 		Form* attachToForm;
 	};
 
+
+
+
 	class Button :public Component {
 	public:
 		void draw();
 		Button(sf::Vector2f position, sf::Vector2f size, Form* attachToForm);
-		
-	private:
+		Button() : Component() {}
+		void attachEvent(void (*function)(), Events event);
+		void initialization(sf::Vector2f size, sf::Vector2f position, std::string text);
+		void initialization(sf::Vector2f size, sf::Vector2f position, std::string text, Form* attachToForm);
+		void setText(std::string text);
+		Event_function findEvent(lui::Events event);
 		bool state = false;
+	private:
+		sf::Color backgroundColor = sf::Color(88, 56, 48);
+		sf::Color fontColor = sf::Color(0, 0, 0);
 		bool isToggle = false;
 		sf::Text text;
-		int fontSize = 10;
+		int fontSize = 13;
+		std::vector<Event_function> events;
 	};
+	
 
+	class TextField : public Component {
+	public:
+		void draw();
+		TextField() : Component() {}
+		TextField(sf::Vector2f position, sf::Vector2f size, Form* attachToForm);
+		void initialization(sf::Vector2f size, sf::Vector2f position, std::string text, Form* attachToForm);
+	private:
+		sf::Text text;
+		sf::Text backgroundText;
+		int fontSize = 11;
+	};
 }
+

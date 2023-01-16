@@ -19,7 +19,9 @@ namespace lui {
 		sf::RenderWindow renderWindow;
 		bool blockRender = false;
 	private:
+		bool leftMouseState = false;
 		std::vector<Form*> luiForms;
 		void render();
+		void updateControll(sf::Event event);
 	};
 }

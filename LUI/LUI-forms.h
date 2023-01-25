@@ -8,6 +8,10 @@
 
 
 namespace lui {
+	class Form;
+	class Component;
+	class Button;
+
 	static int CountForms = 0;
 	bool PointInRect(sf::Vector2i point, sf::Vector2i rectA, sf::Vector2i rectB);
 
@@ -38,6 +42,8 @@ namespace lui {
 		CLICK
 	};
 	std::string EventsToSting(Events event);
+	std::string ClassToString(Component* component);
+
 
 	struct Event_function
 	{
@@ -47,9 +53,7 @@ namespace lui {
 
 
 
-	class Form;
-	class Component;
-	class Button;
+
 
 
 	class Form{
@@ -191,5 +195,7 @@ namespace lui {
 	private:
 
 	};
+
+
 }
 

@@ -34,6 +34,19 @@ std::string lui::EventsToSting(Events getEvent)
 	return std::string("Error - Unknown Event");
 }
 
+std::string lui::ClassToString(Component* component)
+{
+	if (dynamic_cast<Button*>(component)) {
+		return std::string("Button");
+	}
+	if (dynamic_cast<TextField*>(component)) {
+		return std::string("TextField");
+	}
+	return std::string();
+}
+
+
+
 lui::Form::Form(sf::RenderWindow* renderWindow)
 {
 	this->renderWindow = renderWindow;
@@ -84,7 +97,7 @@ void lui::Form::draw()
 		}
 		if (dynamic_cast<TextField*>(components[i])) {
 			TextField* tf = dynamic_cast<TextField*>(components[i]);
-			tf->draw();
+			tf->draw();	
 		}
 	}
 
@@ -170,11 +183,15 @@ void lui::Form::update(sf::Event event)
 		if (PointInRect(sf::Mouse::getPosition(*renderWindow), currentComponentPosition, currentComponentPosition + currentComponentSize)) {
 			if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left) {
 				executeEventComponent(lui::Events::PRESS, components[i]);
+
 				if (dynamic_cast<Button*>(components[i]))
 				{
-					focus = components[i];
-					dynamic_cast<Button*>(components[i])->state = true;
+					if (!dynamic_cast<Button*>(components[i])->isToggle) {
+						focus = components[i];
+						dynamic_cast<Button*>(components[i])->state = true;
+					}
 				}
+
 				if (dynamic_cast<TextField*>(components[i]))
 				{
 					focus = components[i];
@@ -185,10 +202,13 @@ void lui::Form::update(sf::Event event)
 			if (event.type == sf::Event::MouseButtonReleased && event.mouseButton.button == sf::Mouse::Left && focus == components[i]) {
 				if (dynamic_cast<Button*>(components[i]))
 				{
-					executeEventComponent(lui::Events::RELEASE, components[i]);
-					dynamic_cast<Button*>(components[i])->state = false;
-					focus = NULL;
+					if (!dynamic_cast<Button*>(components[i])->isToggle) {
+						executeEventComponent(lui::Events::RELEASE, components[i]);
+						dynamic_cast<Button*>(components[i])->state = false;
+						focus = NULL;
+					}
 				}
+
 				if (dynamic_cast<TextField*>(components[i]))
 				{
 					focus = components[i];
@@ -218,32 +238,6 @@ void lui::Form::update(sf::Event event)
 
 
 
-		//if (dynamic_cast<Button*>(components[i]))
-		//{
-		//	Button* button = dynamic_cast<Button*>(components[i]);
-
-		//	if (PointInRect(sf::Mouse::getPosition(*renderWindow), currentComponentPosition, currentComponentPosition + currentComponentSize)) {
-		//		if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left) {
-		//			focus = components[i];
-		//			executeEventComponent(lui::Events::PRESS, components[i]);
-		//			button->state = true;
-		//			return;
-		//		}
-		//		if (event.type == sf::Event::MouseButtonReleased && event.mouseButton.button == sf::Mouse::Left && focus == components[i]) {
-		//			executeEventComponent(lui::Events::RELEASE, components[i]);
-		//			executeEventComponent(lui::Events::CLICK, components[i]);
-		//			button->state = false;
-		//			focus = NULL;
-		//			return;
-		//		}
-		//	}
-		//	if (event.type == sf::Event::MouseButtonReleased && event.mouseButton.button == sf::Mouse::Left && focus == components[i]) {
-		//		executeEventComponent(lui::Events::RELEASE, components[i]);
-		//		button->state = false;
-		//		focus = NULL;
-		//		return;
-		//	}
-		//}
 
 		//######################################################################################
 		if (dynamic_cast<TextField*>(components[i])) {
@@ -403,7 +397,7 @@ void lui::Form::sortComponentsByZindex()
 void lui::Form::executeEventComponent(lui::Events getEvent, Component* component)
 {
 #ifdef LUI_DEBUG
-	std::cout << "ComponentId - " << component->id << " Event - " << EventsToSting(getEvent) << std::endl;
+	std::cout << "ComponentId - " << component->id << " " << ClassToString(component) << " Event - " << EventsToSting(getEvent) << std::endl;
 #endif // LUI_DEBUG
 
 	Event_function Ef = component->findEventFunction(getEvent);

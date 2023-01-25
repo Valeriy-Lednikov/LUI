@@ -108,7 +108,7 @@ void lui::Form::update(sf::Event event)
 			size = sf::Vector2f(subPoints.x + 10, subPoints.y + 10);
 		}
 
-		
+
 	}
 
 	if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left) {
@@ -140,22 +140,49 @@ void lui::Form::update(sf::Event event)
 
 
 	//UpdateComponents
-	//###########################################################################################################33
+	//###########################################################################################################
 
 	for (int i = 0; i < components.size(); i++) {
+		sf::Vector2i currentComponentPosition = sf::Vector2i(components[i]->position);
+		sf::Vector2i currentComponentSize = sf::Vector2i(components[i]->size);
 		if (dynamic_cast<Button*>(components[i]))
 		{
 			Button* button = dynamic_cast<Button*>(components[i]);
 
 
-			sf::Vector2i componentPosition = sf::Vector2i(components[i]->position);
-			if (PointInRect(sf::Mouse::getPosition(*renderWindow), componentPosition, componentPosition + sf::Vector2i(components[i]->size))) {
+
+			if (PointInRect(sf::Mouse::getPosition(*renderWindow), currentComponentPosition, currentComponentPosition + currentComponentSize)) {
+				if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left) {
+					focus = components[i];
+					break;
+				}
+				if (event.type == sf::Event::MouseButtonReleased && event.mouseButton.button == sf::Mouse::Left) {
+					focus = NULL;
+					break;
+				}
+			}
+			if (event.type == sf::Event::MouseButtonReleased && event.mouseButton.button == sf::Mouse::Left) {
+				focus = NULL;
+				break;
+			}
+
+
+
+
+
+
+
+
+
+
+
+
+			if (PointInRect(sf::Mouse::getPosition(*renderWindow), currentComponentPosition, currentComponentPosition + currentComponentSize)) {
 				if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)) {
 					focus = components[i];
 					if (button->state == false) {
-						//click
 						Event_function Ef = button->findEvent(lui::Events::PRESS);
-						if(Ef.function != NULL) {
+						if (Ef.function != NULL) {
 							Ef.function();
 						}
 					}
@@ -173,21 +200,50 @@ void lui::Form::update(sf::Event event)
 					if (Ef.function != NULL) {
 						Ef.function();
 					}
+					focus = NULL;
 					continue;
 				}
 			}
-			if (event.type == sf::Event::MouseButtonReleased && event.mouseButton.button == sf::Mouse::Left) {
-				if (focus != NULL) {
+			if (button->state == true && focus == components[i]) {
+				if (event.type == sf::Event::MouseButtonReleased && event.mouseButton.button == sf::Mouse::Left) {
 					button->state = false;
 					Event_function Ef = button->findEvent(lui::Events::RELEASE);
 					if (Ef.function != NULL) {
 						Ef.function();
 					}
+					focus = NULL;
 				}
 			}
 		}
 
+		//######################################################################################
+		if (dynamic_cast<TextField*>(components[i])) {
+			TextField* tf = dynamic_cast<TextField*>(components[i]);
 
+			if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)) {
+				if (PointInRect(sf::Mouse::getPosition(*renderWindow), currentComponentPosition, currentComponentPosition + currentComponentSize)) {
+					focus = components[i];
+				}
+				else {
+					if (focus == components[i]) {
+						focus = NULL;
+					}
+				}
+			}
+			if (event.type == sf::Event::TextEntered && focus == components[i])
+			{
+				if (event.text.unicode == 8) {
+					std::string temp = tf->text.getString();
+					if (!temp.empty()) {
+						temp.resize(temp.size() - 1);
+					}
+					tf->text.setString(temp);
+				}
+				else {
+					tf->text.setString(tf->text.getString() + event.text.unicode);
+				}
+			}
+		}
 	}
 
 
@@ -282,15 +338,15 @@ void lui::Form::setCountComponents(int count)
 
 int lui::Form::createElement(ElementType type)
 {
-	
-		if (type == ElementType::BUTTON) {
-			Button* t = new Button(sf::Vector2f(30, 30), sf::Vector2f(50, 20), this);
-			
-			components.push_back(t);
-			return t->getId();
-			
-		}
-	
+
+	if (type == ElementType::BUTTON) {
+		Button* t = new Button(sf::Vector2f(30, 30), sf::Vector2f(50, 20), this);
+
+		components.push_back(t);
+		return t->getId();
+
+	}
+
 }
 
 void lui::Form::attachComponent(Component* element)
@@ -298,6 +354,39 @@ void lui::Form::attachComponent(Component* element)
 	element->id = this->getCountComponents() + 1;
 	components.push_back(element);
 	countComponents++;
+	this->sortComponentsByZindex();
+}
+
+void lui::Form::updateComponents()
+{
+	this->sortComponentsByZindex();
+}
+
+lui::Component* lui::Form::getFocus()
+{
+	return focus;
+}
+
+void lui::Form::sortComponentsByZindex()
+{
+	for (int i = 0; i < components.size(); i++) {
+		if (i != components.size() - 1 && components.size() != 1) {
+			if (components.at(i + 1)->zIndex < components.at(i)->zIndex) {
+				std::swap(components.at(i), components.at(i + 1));
+			}
+		}
+	}
+}
+
+void lui::Form::executeEventComponent(lui::Events getEvent, Component* component)
+{
+
+
+	Event_function Ef = component->findEvent(getEvent);
+	if (Ef.function != NULL) {
+		Ef.function();
+	}
+	focus = NULL;
 }
 
 
@@ -309,14 +398,14 @@ void lui::Form::attachComponent(Component* element)
 //#########################################COMPONENTS###################################################################
 //######################################################################################################################
 
-lui::Component::Component(sf::Vector2f position, sf::Vector2f size, bool isActive, bool isVisible, Form* attachToForm) 
+lui::Component::Component(sf::Vector2f position, sf::Vector2f size, bool isActive, bool isVisible, Form* attachToForm)
 {
 	this->attachToForm = attachToForm;
 	this->position = position;
 	this->size = size;
 	this->active = isActive;
 	this->visible = isVisible;
-	this->id = this->attachToForm->getCountComponents() +1;
+	this->id = this->attachToForm->getCountComponents() + 1;
 	this->attachToForm->setCountComponents(id);
 }
 
@@ -487,21 +576,33 @@ void lui::TextField::draw()
 {
 	sf::RectangleShape fon(sf::Vector2f(size.x, size.y));
 	fon.setPosition(position.x, position.y);
-	fon.setFillColor(sf::Color(0, 0, 0));
+	if (this->attachToForm->getFocus() == this) {
+		fon.setFillColor(sf::Color(255, 0, 0));
+	}
+	else {
+		fon.setFillColor(sf::Color(0, 0, 0));
+	}
 	this->attachToForm->renderWindow->draw(fon);
 
-	fon.setPosition(position.x+1, position.y+1);
-	fon.setSize( sf::Vector2f(size.x - 2, size.y - 2));
+	fon.setPosition(position.x + 1, position.y + 1);
+	fon.setSize(sf::Vector2f(size.x - 2, size.y - 2));
 	fon.setFillColor(sf::Color(64, 128, 128));
 	this->attachToForm->renderWindow->draw(fon);
 
-	backgroundText.setCharacterSize(fontSize);
-	backgroundText.setFillColor(sf::Color(255,255,255,128));
-	sf::Vector2i Center = sf::Vector2i((position.x), (position.y + size.y / 2));
-	Center = sf::Vector2i(Center.x + backgroundText.getGlobalBounds().width / 2, (Center.y - backgroundText.getGlobalBounds().height / 2) - 3);
-	backgroundText.setPosition(Center.x, Center.y);
-	this->attachToForm->renderWindow->draw(backgroundText);
 
+	sf::Vector2i Center = sf::Vector2i((position.x), (position.y + size.y / 2));
+	if (text.getString() == "") {
+		Center = sf::Vector2i(Center.x + 5, (Center.y - backgroundText.getGlobalBounds().height / 1.5));
+		backgroundText.setPosition(Center.x, Center.y);
+		this->attachToForm->renderWindow->draw(backgroundText);
+	}
+	else {
+		if (text.getGlobalBounds().width < size.x - 10) {
+			Center = sf::Vector2i(Center.x + 5, (Center.y - text.getGlobalBounds().height / 1.5));
+			text.setPosition(Center.x, Center.y);
+			this->attachToForm->renderWindow->draw(text);
+		}
+	}
 }
 
 
@@ -518,6 +619,14 @@ void lui::TextField::initialization(sf::Vector2f size, sf::Vector2f position, st
 {
 	this->text.setFont(Resources::getInstance()->getFontByID(0));
 	this->backgroundText.setFont(Resources::getInstance()->getFontByID(0));
+
+	this->backgroundText.setCharacterSize(fontSize);
+	this->backgroundText.setFillColor(sf::Color(255, 255, 255, 128));
+	this->text.setCharacterSize(fontSize);
+	this->text.setFillColor(sf::Color(255, 255, 255, 255));
+
+
+
 	this->size = size;
 	this->position = position;
 	this->backgroundText.setString(backgroundText);

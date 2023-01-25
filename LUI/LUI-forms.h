@@ -45,17 +45,9 @@ namespace lui {
 
 
 
-
-
-
-
-
 	class Form;
 	class Component;
 	class Button;
-
-
-
 
 
 	class Form{
@@ -89,9 +81,15 @@ namespace lui {
 
 		int createElement(ElementType type);
 		void attachComponent(Component* element);
-		
+		void updateComponents();
 
+		Component* getFocus();
 	private:
+		void sortComponentsByZindex();
+		void executeEventComponent(lui::Events getEvent, Component* component);
+
+
+
 		int countComponents = 0;
 		std::vector<Component*> components;
 		Component* focus = NULL;
@@ -166,15 +164,14 @@ namespace lui {
 		void attachEvent(void (*function)(), Events event);
 		void initialization(sf::Vector2f size, sf::Vector2f position, std::string text);
 		void initialization(sf::Vector2f size, sf::Vector2f position, std::string text, Form* attachToForm);
-		void setText(std::string text);
 		Event_function findEvent(lui::Events event);
+		sf::Text text;
 		bool state = false;
-	private:
 		sf::Color backgroundColor = sf::Color(88, 56, 48);
 		sf::Color fontColor = sf::Color(0, 0, 0);
 		bool isToggle = false;
-		sf::Text text;
 		int fontSize = 13;
+	private:
 		std::vector<Event_function> events;
 	};
 	
@@ -185,10 +182,11 @@ namespace lui {
 		TextField() : Component() {}
 		TextField(sf::Vector2f position, sf::Vector2f size, Form* attachToForm);
 		void initialization(sf::Vector2f size, sf::Vector2f position, std::string text, Form* attachToForm);
-	private:
 		sf::Text text;
 		sf::Text backgroundText;
 		int fontSize = 11;
+	private:
+
 	};
 }
 

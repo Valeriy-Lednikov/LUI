@@ -3,18 +3,31 @@
 lui::LUI ui;
 lui::Form* myForm;
 lui::Button button;
-lui::TextField tfi;
+lui::Button button2;
+lui::TextField textField;
 
 int a = 0;
 
-void ButtonFunk1() {
-	std::cout << "Button PRESS " << "\n";
+//void ButtonFunk1() {
+//	std::cout << "Button PRESS " << "\n";
+//}
+//void ButtonFunk2() {
+//	std::cout << "Button RELEASE " << "\n";
+//}
+//void ButtonFunk3() {
+//	std::cout << "Button CLICK " << "\n";
+//	button.text.setString(textField.text.getString());
+//}
+
+void Button1C() {
+	button.zIndex++;
+	myForm->updateComponents();
+	std::cout << "button 1 z = " << button.zIndex << "\n";
 }
-void ButtonFunk2() {
-	std::cout << "Button RELEASE " << "\n";
-}
-void ButtonFunk3() {
-	std::cout << "Button CLICK " << "\n";
+void Button2C() {
+	button2.zIndex ++;
+	myForm->updateComponents();
+	std::cout << "button 2 z = " << button2.zIndex << "\n";
 }
 
 void Start() {
@@ -22,14 +35,21 @@ void Start() {
 	myForm->setTitleText("Hi! This is Form!");
 	myForm->setFlag("FORM_IS_WINDOW", true);
 
-	//button.initialization(sf::Vector2f(300, 100), sf::Vector2f(100, 30), "Button 1", myForm);
-	//myForm->attachComponent(&button);
-	button.attachEvent(ButtonFunk1, lui::Events::PRESS);
-	button.attachEvent(ButtonFunk2, lui::Events::RELEASE);
-	button.attachEvent(ButtonFunk3, lui::Events::CLICK);
 
-	tfi.initialization(sf::Vector2f(100, 30), sf::Vector2f(20, 50), "print", myForm);
-	myForm->attachComponent(&tfi);
+
+	button.initialization(sf::Vector2f(100, 60), sf::Vector2f(200, 80), "Button 1", myForm);
+	myForm->attachComponent(&button);
+	button.attachEvent(Button1C, lui::Events::CLICK);
+
+	button2.initialization(sf::Vector2f(100, 60), sf::Vector2f(230, 90), "Button 2", myForm);
+	myForm->attachComponent(&button2);
+	button2.attachEvent(Button2C, lui::Events::CLICK);
+
+
+
+
+	textField.initialization(sf::Vector2f(100, 30), sf::Vector2f(20, 50), "print", myForm);
+	myForm->attachComponent(&textField);
 	
 
 }

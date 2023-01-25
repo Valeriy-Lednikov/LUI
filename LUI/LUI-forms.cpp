@@ -149,70 +149,26 @@ void lui::Form::update(sf::Event event)
 		{
 			Button* button = dynamic_cast<Button*>(components[i]);
 
-
-
 			if (PointInRect(sf::Mouse::getPosition(*renderWindow), currentComponentPosition, currentComponentPosition + currentComponentSize)) {
 				if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left) {
 					focus = components[i];
+					executeEventComponent(lui::Events::PRESS, components[i]);
+					button->state = true;
 					break;
 				}
 				if (event.type == sf::Event::MouseButtonReleased && event.mouseButton.button == sf::Mouse::Left) {
+					executeEventComponent(lui::Events::RELEASE, components[i]);
+					executeEventComponent(lui::Events::CLICK, components[i]);
+					button->state = false;
 					focus = NULL;
 					break;
 				}
 			}
 			if (event.type == sf::Event::MouseButtonReleased && event.mouseButton.button == sf::Mouse::Left) {
+				executeEventComponent(lui::Events::RELEASE, components[i]);
+				button->state = false;
 				focus = NULL;
 				break;
-			}
-
-
-
-
-
-
-
-
-
-
-
-
-			if (PointInRect(sf::Mouse::getPosition(*renderWindow), currentComponentPosition, currentComponentPosition + currentComponentSize)) {
-				if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)) {
-					focus = components[i];
-					if (button->state == false) {
-						Event_function Ef = button->findEvent(lui::Events::PRESS);
-						if (Ef.function != NULL) {
-							Ef.function();
-						}
-					}
-					button->state = true;
-				}
-				else {
-					button->state = false;
-				}
-				if (event.type == sf::Event::MouseButtonReleased && event.mouseButton.button == sf::Mouse::Left) {
-					Event_function Ef = button->findEvent(lui::Events::RELEASE);
-					if (Ef.function != NULL) {
-						Ef.function();
-					}
-					Ef = button->findEvent(lui::Events::CLICK);
-					if (Ef.function != NULL) {
-						Ef.function();
-					}
-					focus = NULL;
-					continue;
-				}
-			}
-			if (button->state == true && focus == components[i]) {
-				if (event.type == sf::Event::MouseButtonReleased && event.mouseButton.button == sf::Mouse::Left) {
-					button->state = false;
-					Event_function Ef = button->findEvent(lui::Events::RELEASE);
-					if (Ef.function != NULL) {
-						Ef.function();
-					}
-					focus = NULL;
-				}
 			}
 		}
 
@@ -380,13 +336,10 @@ void lui::Form::sortComponentsByZindex()
 
 void lui::Form::executeEventComponent(lui::Events getEvent, Component* component)
 {
-
-
-	Event_function Ef = component->findEvent(getEvent);
+	Event_function Ef = component->findEventFunction(getEvent);
 	if (Ef.function != NULL) {
 		Ef.function();
 	}
-	focus = NULL;
 }
 
 
@@ -421,6 +374,29 @@ lui::Component::Component(sf::Vector2f position, sf::Vector2f size, Form* attach
 int lui::Component::getId()
 {
 	return id;
+}
+
+lui::Event_function lui::Component::findEventFunction(lui::Events event)
+{
+	Event_function funk;
+	funk.function = NULL;
+	for (int i = 0; i < this->events.size(); i++) {
+		if (this->events[i].event == event) {
+			funk.event = this->events[i].event;
+			funk.function = this->events[i].function;
+		}
+	}
+	return funk;
+}
+
+void lui::Component::attachEvent(void(*function)(), Events event)
+{
+
+		Event_function* ev = new Event_function();
+		ev->event = event;
+		ev->function = function;
+		events.push_back(*ev);
+	
 }
 
 
@@ -526,13 +502,7 @@ lui::Button::Button(sf::Vector2f position, sf::Vector2f size, Form* attachToForm
 	//activateFuntion = NULL;
 }
 
-void lui::Button::attachEvent(void(*function)(), Events event)
-{
-	Event_function* ev = new Event_function();
-	ev->event = event;
-	ev->function = function;
-	events.push_back(*ev);
-}
+
 
 void lui::Button::initialization(sf::Vector2f size, sf::Vector2f position, std::string text)
 {
@@ -551,18 +521,7 @@ void lui::Button::initialization(sf::Vector2f size, sf::Vector2f position, std::
 	this->attachToForm = attachToForm;
 }
 
-lui::Event_function lui::Button::findEvent(lui::Events event)
-{
-	Event_function funk;
-	funk.function = NULL;
-	for (int i = 0; i < this->events.size(); i++) {
-		if (this->events[i].event == event) {
-			funk.event = this->events[i].event;
-			funk.function = this->events[i].function;
-		}
-	}
-	return funk;
-}
+
 
 
 

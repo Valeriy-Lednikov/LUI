@@ -151,6 +151,10 @@ namespace lui {
 		int zIndex = 1;
 		Attach attach = Attach::LEFT_UP;
 		Form* attachToForm;
+		std::vector<Event_function> events;
+
+		Event_function findEventFunction(lui::Events event);
+		void attachEvent(void (*function)(), Events event);
 	};
 
 
@@ -161,18 +165,15 @@ namespace lui {
 		void draw();
 		Button(sf::Vector2f position, sf::Vector2f size, Form* attachToForm);
 		Button() : Component() {}
-		void attachEvent(void (*function)(), Events event);
+		
 		void initialization(sf::Vector2f size, sf::Vector2f position, std::string text);
 		void initialization(sf::Vector2f size, sf::Vector2f position, std::string text, Form* attachToForm);
-		Event_function findEvent(lui::Events event);
 		sf::Text text;
 		bool state = false;
 		sf::Color backgroundColor = sf::Color(88, 56, 48);
 		sf::Color fontColor = sf::Color(0, 0, 0);
 		bool isToggle = false;
 		int fontSize = 13;
-	private:
-		std::vector<Event_function> events;
 	};
 	
 

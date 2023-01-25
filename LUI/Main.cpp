@@ -8,27 +8,26 @@ lui::TextField textField;
 
 int a = 0;
 
-//void ButtonFunk1() {
-//	std::cout << "Button PRESS " << "\n";
-//}
-//void ButtonFunk2() {
-//	std::cout << "Button RELEASE " << "\n";
-//}
-//void ButtonFunk3() {
-//	std::cout << "Button CLICK " << "\n";
-//	button.text.setString(textField.text.getString());
-//}
+void ButtonFunkP() {
+	std::cout << "Button PRESS " << "\n";
+}
+void ButtonFunkR() {
+	std::cout << "Button RELEASE " << "\n";
+}
+void ButtonFunkC() {
+	std::cout << "Button CLICK " << "\n";
+}
 
-void Button1C() {
-	button.zIndex++;
-	myForm->updateComponents();
-	std::cout << "button 1 z = " << button.zIndex << "\n";
-}
-void Button2C() {
-	button2.zIndex ++;
-	myForm->updateComponents();
-	std::cout << "button 2 z = " << button2.zIndex << "\n";
-}
+//void Button1C() {
+//	button.zIndex++;
+//	myForm->updateComponents();
+//	std::cout << "button 1 z = " << button.zIndex << "\n";
+//}
+//void Button2C() {
+//	button2.zIndex ++;
+//	myForm->updateComponents();
+//	std::cout << "button 2 z = " << button2.zIndex << "\n";
+//}
 
 void Start() {
 	myForm = ui.createForm();
@@ -39,11 +38,13 @@ void Start() {
 
 	button.initialization(sf::Vector2f(100, 60), sf::Vector2f(200, 80), "Button 1", myForm);
 	myForm->attachComponent(&button);
-	button.attachEvent(Button1C, lui::Events::CLICK);
+	button.attachEvent(ButtonFunkP, lui::Events::PRESS);
+	button.attachEvent(ButtonFunkR, lui::Events::RELEASE);
+	button.attachEvent(ButtonFunkC, lui::Events::CLICK);
 
-	button2.initialization(sf::Vector2f(100, 60), sf::Vector2f(230, 90), "Button 2", myForm);
-	myForm->attachComponent(&button2);
-	button2.attachEvent(Button2C, lui::Events::CLICK);
+	//button2.initialization(sf::Vector2f(100, 60), sf::Vector2f(230, 90), "Button 2", myForm);
+	//myForm->attachComponent(&button2);
+	//button2.attachEvent(Button2C, lui::Events::CLICK);
 
 
 

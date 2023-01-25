@@ -8,15 +8,7 @@ lui::TextField textField;
 
 int a = 0;
 
-void ButtonFunkP() {
-	std::cout << "Button PRESS " << "\n";
-}
-void ButtonFunkR() {
-	std::cout << "Button RELEASE " << "\n";
-}
-void ButtonFunkC() {
-	std::cout << "Button CLICK " << "\n";
-}
+
 
 //void Button1C() {
 //	button.zIndex++;
@@ -38,15 +30,10 @@ void Start() {
 
 	button.initialization(sf::Vector2f(100, 60), sf::Vector2f(200, 80), "Button 1", myForm);
 	myForm->attachComponent(&button);
-	button.attachEvent(ButtonFunkP, lui::Events::PRESS);
-	button.attachEvent(ButtonFunkR, lui::Events::RELEASE);
-	button.attachEvent(ButtonFunkC, lui::Events::CLICK);
+	button.zIndex++;
 
-	//button2.initialization(sf::Vector2f(100, 60), sf::Vector2f(230, 90), "Button 2", myForm);
-	//myForm->attachComponent(&button2);
-	//button2.attachEvent(Button2C, lui::Events::CLICK);
-
-
+	button2.initialization(sf::Vector2f(100, 60), sf::Vector2f(230, 90), "Button 2", myForm);
+	myForm->attachComponent(&button2);
 
 
 	textField.initialization(sf::Vector2f(100, 30), sf::Vector2f(20, 50), "print", myForm);

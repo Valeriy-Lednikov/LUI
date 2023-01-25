@@ -37,6 +37,8 @@ namespace lui {
 		RELEASE,
 		CLICK
 	};
+	std::string EventsToSting(Events event);
+
 	struct Event_function
 	{
 		Events event;

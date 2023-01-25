@@ -4,6 +4,7 @@ class Form;
 class Component;
 class Button;
 
+
 bool lui::PointInRect(sf::Vector2i point, sf::Vector2i rectA, sf::Vector2i rectB)
 {
 	if (point.x > rectA.x && point.x<rectB.x && point.y>rectA.y && point.y < rectB.y) {
@@ -15,7 +16,23 @@ bool lui::PointInRect(sf::Vector2i point, sf::Vector2i rectA, sf::Vector2i rectB
 	}
 }
 
-
+std::string lui::EventsToSting(Events getEvent)
+{
+	std::string t = "";
+	if (getEvent == Events::PRESS) {
+		return std::string("PRESS");
+	}
+	if (getEvent == Events::RELEASE) {
+		return std::string("RELEASE");
+	}
+	if (getEvent == Events::CLICK) {
+		return std::string("CLICK");
+	}
+	if (getEvent == Events::MOUSE_IN) {
+		return std::string("MOUSE_IN");
+	}
+	return std::string("Error - Unknown Event");
+}
 
 lui::Form::Form(sf::RenderWindow* renderWindow)
 {
@@ -62,6 +79,8 @@ void lui::Form::draw()
 		{
 			Button* button = dynamic_cast<Button*>(components[i]);
 			button->draw();
+			//std::string tempS = button->text.getString();
+			//	std::cout << "draw button - " << tempS << " I = " << i << "\n";
 		}
 		if (dynamic_cast<TextField*>(components[i])) {
 			TextField* tf = dynamic_cast<TextField*>(components[i]);
@@ -142,66 +161,113 @@ void lui::Form::update(sf::Event event)
 	//UpdateComponents
 	//###########################################################################################################
 
-	for (int i = 0; i < components.size(); i++) {
+	for (int i = components.size() - 1; i >= 0; i--) {
 		sf::Vector2i currentComponentPosition = sf::Vector2i(components[i]->position);
 		sf::Vector2i currentComponentSize = sf::Vector2i(components[i]->size);
-		if (dynamic_cast<Button*>(components[i]))
-		{
-			Button* button = dynamic_cast<Button*>(components[i]);
 
-			if (PointInRect(sf::Mouse::getPosition(*renderWindow), currentComponentPosition, currentComponentPosition + currentComponentSize)) {
-				if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left) {
+
+		//standat
+		if (PointInRect(sf::Mouse::getPosition(*renderWindow), currentComponentPosition, currentComponentPosition + currentComponentSize)) {
+			if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left) {
+				executeEventComponent(lui::Events::PRESS, components[i]);
+				if (dynamic_cast<Button*>(components[i]))
+				{
 					focus = components[i];
-					executeEventComponent(lui::Events::PRESS, components[i]);
-					button->state = true;
-					break;
+					dynamic_cast<Button*>(components[i])->state = true;
 				}
-				if (event.type == sf::Event::MouseButtonReleased && event.mouseButton.button == sf::Mouse::Left) {
-					executeEventComponent(lui::Events::RELEASE, components[i]);
-					executeEventComponent(lui::Events::CLICK, components[i]);
-					button->state = false;
-					focus = NULL;
-					break;
+				if (dynamic_cast<TextField*>(components[i]))
+				{
+					focus = components[i];
 				}
+				return;
+				
 			}
-			if (event.type == sf::Event::MouseButtonReleased && event.mouseButton.button == sf::Mouse::Left) {
-				executeEventComponent(lui::Events::RELEASE, components[i]);
-				button->state = false;
-				focus = NULL;
-				break;
+			if (event.type == sf::Event::MouseButtonReleased && event.mouseButton.button == sf::Mouse::Left && focus == components[i]) {
+				if (dynamic_cast<Button*>(components[i]))
+				{
+					executeEventComponent(lui::Events::RELEASE, components[i]);
+					dynamic_cast<Button*>(components[i])->state = false;
+					focus = NULL;
+				}
+				if (dynamic_cast<TextField*>(components[i]))
+				{
+					focus = components[i];
+				}
+				executeEventComponent(lui::Events::CLICK, components[i]);
+				return;
 			}
 		}
+		if (event.type == sf::Event::MouseButtonReleased && event.mouseButton.button == sf::Mouse::Left && focus == components[i]) {
+			executeEventComponent(lui::Events::RELEASE, components[i]);
+			if (dynamic_cast<Button*>(components[i]))
+			{
+				dynamic_cast<Button*>(components[i])->state = false;
+				focus = NULL;
+			}
+			if (dynamic_cast<TextField*>(components[i]))
+			{
+				focus = NULL;
+			}
+			return;
+		}
+		//#######
+
+
+
+
+
+
+
+		//if (dynamic_cast<Button*>(components[i]))
+		//{
+		//	Button* button = dynamic_cast<Button*>(components[i]);
+
+		//	if (PointInRect(sf::Mouse::getPosition(*renderWindow), currentComponentPosition, currentComponentPosition + currentComponentSize)) {
+		//		if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left) {
+		//			focus = components[i];
+		//			executeEventComponent(lui::Events::PRESS, components[i]);
+		//			button->state = true;
+		//			return;
+		//		}
+		//		if (event.type == sf::Event::MouseButtonReleased && event.mouseButton.button == sf::Mouse::Left && focus == components[i]) {
+		//			executeEventComponent(lui::Events::RELEASE, components[i]);
+		//			executeEventComponent(lui::Events::CLICK, components[i]);
+		//			button->state = false;
+		//			focus = NULL;
+		//			return;
+		//		}
+		//	}
+		//	if (event.type == sf::Event::MouseButtonReleased && event.mouseButton.button == sf::Mouse::Left && focus == components[i]) {
+		//		executeEventComponent(lui::Events::RELEASE, components[i]);
+		//		button->state = false;
+		//		focus = NULL;
+		//		return;
+		//	}
+		//}
 
 		//######################################################################################
 		if (dynamic_cast<TextField*>(components[i])) {
 			TextField* tf = dynamic_cast<TextField*>(components[i]);
 
-			if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)) {
-				if (PointInRect(sf::Mouse::getPosition(*renderWindow), currentComponentPosition, currentComponentPosition + currentComponentSize)) {
-					focus = components[i];
-				}
-				else {
-					if (focus == components[i]) {
-						focus = NULL;
-					}
-				}
-			}
 			if (event.type == sf::Event::TextEntered && focus == components[i])
 			{
-				if (event.text.unicode == 8) {
-					std::string temp = tf->text.getString();
-					if (!temp.empty()) {
-						temp.resize(temp.size() - 1);
-					}
-					tf->text.setString(temp);
-				}
-				else {
+				std::string TSting = tf->text.getString();
+				if (event.text.unicode != 8)
 					tf->text.setString(tf->text.getString() + event.text.unicode);
+				else {
+					if (!TSting.empty()) {
+						TSting.pop_back();
+						tf->text.setString(TSting);
+					}
 				}
+				//return;
 			}
 		}
 	}
 
+	//if (event.type == sf::Event::MouseButtonReleased && event.mouseButton.button == sf::Mouse::Left) {
+	//	focus = NULL;
+	//}
 
 
 }
@@ -336,6 +402,10 @@ void lui::Form::sortComponentsByZindex()
 
 void lui::Form::executeEventComponent(lui::Events getEvent, Component* component)
 {
+#ifdef LUI_DEBUG
+	std::cout << "ComponentId - " << component->id << " Event - " << EventsToSting(getEvent) << std::endl;
+#endif // LUI_DEBUG
+
 	Event_function Ef = component->findEventFunction(getEvent);
 	if (Ef.function != NULL) {
 		Ef.function();
@@ -392,11 +462,11 @@ lui::Event_function lui::Component::findEventFunction(lui::Events event)
 void lui::Component::attachEvent(void(*function)(), Events event)
 {
 
-		Event_function* ev = new Event_function();
-		ev->event = event;
-		ev->function = function;
-		events.push_back(*ev);
-	
+	Event_function* ev = new Event_function();
+	ev->event = event;
+	ev->function = function;
+	events.push_back(*ev);
+
 }
 
 
@@ -551,13 +621,13 @@ void lui::TextField::draw()
 
 	sf::Vector2i Center = sf::Vector2i((position.x), (position.y + size.y / 2));
 	if (text.getString() == "") {
-		Center = sf::Vector2i(Center.x + 5, (Center.y - backgroundText.getGlobalBounds().height / 1.5));
+		Center = sf::Vector2i(Center.x + 5, (Center.y - Resources::getInstance()->getMaxHeightFont(0)/4));
 		backgroundText.setPosition(Center.x, Center.y);
 		this->attachToForm->renderWindow->draw(backgroundText);
 	}
 	else {
 		if (text.getGlobalBounds().width < size.x - 10) {
-			Center = sf::Vector2i(Center.x + 5, (Center.y - text.getGlobalBounds().height / 1.5));
+			Center = sf::Vector2i(Center.x + 5, (Center.y - Resources::getInstance()->getMaxHeightFont(0)/4));
 			text.setPosition(Center.x, Center.y);
 			this->attachToForm->renderWindow->draw(text);
 		}

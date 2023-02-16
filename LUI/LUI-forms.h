@@ -4,7 +4,9 @@
 #include <Windows.h>
 #include <vector>
 #include <SFML/Window/Mouse.hpp>
+#include <cstdint> // для uintptr_t
 #include "LUI-Resources.h";
+
 
 
 namespace lui {
@@ -84,6 +86,7 @@ namespace lui {
 
 		Event_function findEventFunction(lui::Events event);
 		void attachEvent(void (*function)(), Events event);
+
 	};
 
 
@@ -129,16 +132,23 @@ namespace lui {
 
 	class Form {
 	public:
-
+		typedef void(Form::* ykaz)();
 		//void closeApp() { exit(0); }
 		Form() {
 			std::cout << "form create " << id << "\n";
 			closeButton.initialization(sf::Vector2f(20, 20), sf::Vector2f(size.x - 22, 2), "X", this);
-			//closeButton.attachEvent(closeApp, lui::Events::CLICK);
+			closeButton.attachEvent(reinterpret_cast<void(*)()>(closeAppAdapter), lui::Events::CLICK);
 		}
 		Form(sf::RenderWindow* renderWindow);
 
+
+
 		void closeApp() { exit(0); }
+		static void closeAppAdapter(void* object) {
+			static_cast<Form*>(object)->closeApp();
+		}
+
+
 
 		void draw();
 		void update(sf::Event event);
@@ -217,7 +227,7 @@ namespace lui {
 
 
 	};
-
+	
 }
 
 

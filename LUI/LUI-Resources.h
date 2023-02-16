@@ -47,6 +47,8 @@ namespace lui {
 			colorStyles.push_back(CS_main);
 
 		}
+		void closeApp() { exit(0); }
+
 		sf::Font& getFontByID(int id) {
 			return fonts.at(id).font;
 		}

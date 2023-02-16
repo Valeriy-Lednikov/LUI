@@ -7,8 +7,11 @@ namespace lui {
 	void LUI::start(void(*usrStart)(),void(*usrUpdate)(), void(*usrControl)(sf::Event))
 	{
 		Resources::getInstance()->initialization();
-		renderWindow.create(sf::VideoMode(800, 600), "LUI"); //sf::Style::None);
+		sf::ContextSettings settings;
+		settings.antialiasingLevel = 2;
+		renderWindow.create(sf::VideoMode(1000, 700), "LUI", sf::Style::None, settings);
 		renderWindow.setFramerateLimit(100);
+
 		HWND hwnd = renderWindow.getSystemHandle();
 		LONG_PTR new_style = WS_SYSMENU;
 			SetWindowLong(hwnd, GWL_EXSTYLE,new_style);

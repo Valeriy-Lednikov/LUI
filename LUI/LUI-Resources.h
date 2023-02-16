@@ -6,15 +6,21 @@
 
 #define LUI_DEBUG
 
+
+
+
 namespace lui {
+	struct ColorStyle {
+		std::vector<sf::Color> color;
+	};
 	class Resources {
 		struct FontData
 		{
 			sf::Font font;
 			double maxHeight;
-		FontData(sf::Font font, double maxHeight) { this->font = font; this->maxHeight = maxHeight; }
+			FontData(sf::Font font, double maxHeight) { this->font = font; this->maxHeight = maxHeight; }
 		};
-	
+
 
 	public:
 		static Resources* getInstance() {
@@ -22,17 +28,26 @@ namespace lui {
 			return &instance;
 		}
 		void initialization() {
-			
+
 			//Arial font - id(0)
 			sf::Font arialF;
 			int size;
-			char *cF = LuiResource::Resource::getInstance()->getResource(0, size);
+			char* cF = LuiResource::Resource::getInstance()->getResource(0, size);
 			arialF.loadFromMemory(cF, size);
 			fonts.push_back(FontData(arialF, 28));
 			//-----
 
+
+			CS_main.color.push_back(sf::Color(88, 56, 48));
+
+
+
+
+
+			colorStyles.push_back(CS_main);
+
 		}
-		sf::Font &getFontByID(int id) {
+		sf::Font& getFontByID(int id) {
 			return fonts.at(id).font;
 		}
 		double getMaxHeightFont(int id) {
@@ -41,10 +56,17 @@ namespace lui {
 			text.setString("aAbBcCdDeEfgGhHiIjJKlLmMnNyY1{[<!&?:*¹;");
 			return text.getGlobalBounds().height;
 		}
-		
+
+
+		sf::Color getColor(int styleId, int ColorId) {
+			return colorStyles.at(styleId).color[ColorId];
+		}
+
 	private:
-		std::vector<FontData> fonts ;
-		Resources(){}
+		std::vector<FontData> fonts;
+		Resources() {}
+		ColorStyle CS_main;
+		std::vector<ColorStyle> colorStyles;
 	};
 
 

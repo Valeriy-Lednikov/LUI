@@ -74,6 +74,12 @@ void lui::Form::draw()
 	textTitle.setPosition(sf::Vector2f(position.x + 10, position.y));
 	textTitle.setFillColor(sf::Color(255, 255, 255, transparency));
 
+	sf::CircleShape triangle(10, 3);
+	triangle.setPosition(renderWindow->getSize().x - 30, renderWindow->getSize().y- 30); // устанавливаем начальную позицию справа от круга
+	triangle.setFillColor(sf::Color::Blue); // устанавливаем цвет треугольника - синий
+	renderWindow->draw(triangle);
+
+
 
 
 	if (renderWindow != NULL) {
@@ -88,17 +94,7 @@ void lui::Form::draw()
 	}
 	//render components ---------------------------------------------------------
 	for (int i = 0; i < components.size(); i++) {
-		if (dynamic_cast<Button*>(components[i]))
-		{
-			Button* button = dynamic_cast<Button*>(components[i]);
-			button->draw();
-			//std::string tempS = button->text.getString();
-			//	std::cout << "draw button - " << tempS << " I = " << i << "\n";
-		}
-		if (dynamic_cast<TextField*>(components[i])) {
-			TextField* tf = dynamic_cast<TextField*>(components[i]);
-			tf->draw();	
-		}
+		components[i]->draw();
 	}
 
 
@@ -284,6 +280,11 @@ void lui::Form::setTitleText(std::string text)
 void lui::Form::setSize(sf::Vector2f size)
 {
 	this->size = size;
+}
+
+sf::Vector2f lui::Form::getSize()
+{
+	return this->size;
 }
 
 
@@ -583,6 +584,7 @@ void lui::Button::initialization(sf::Vector2f size, sf::Vector2f position, std::
 	this->position = position;
 	this->text.setString(text);
 	this->attachToForm = attachToForm;
+	attachToForm->attachComponent(this);
 }
 
 
@@ -654,4 +656,40 @@ void lui::TextField::initialization(sf::Vector2f size, sf::Vector2f position, st
 	this->position = position;
 	this->backgroundText.setString(backgroundText);
 	this->attachToForm = attachToForm;
+
+	attachToForm->attachComponent(this);
+}
+
+//######################################################################################################################
+//#########################################SLIDER#######################################################################
+//######################################################################################################################
+
+
+void lui::Slider::draw()
+{
+	double radiusBall = size.y / 2;
+	sf::RectangleShape fon(sf::Vector2f(size.x - 2 * radiusBall, size.y));
+	fon.setFillColor(sf::Color(30, 60, 50, 255));
+	fon.setPosition(position.x + radiusBall, position.y);
+	this->attachToForm->renderWindow->draw(fon);
+
+	sf::CircleShape ball(size.y / 2);
+	ball.setFillColor(sf::Color(30, 60, 50, 255));
+	ball.setPosition(position.x, position.y);
+	this->attachToForm->renderWindow->draw(ball);
+	ball.setPosition(position.x + size.x - size.y, position.y);
+	this->attachToForm->renderWindow->draw(ball);
+
+	sf::CircleShape controllBall(size.y);
+	controllBall.setFillColor(sf::Color::Red);
+	controllBall.setPosition(position.x + size.x / 2, position.y + size.y/2 - controllBall.getRadius());
+	this->attachToForm->renderWindow->draw(controllBall);
+}
+
+void lui::Slider::initialization(sf::Vector2f size, sf::Vector2f position, Form* attachToForm)
+{
+	this->size = size;
+	this->position = position;
+	this->attachToForm = attachToForm;
+	attachToForm->attachComponent(this);
 }

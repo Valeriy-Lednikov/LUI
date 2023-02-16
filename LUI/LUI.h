@@ -10,6 +10,7 @@
 
 
 using namespace sf;
+
 namespace lui {
 
 	class LUI {

@@ -17,8 +17,9 @@ namespace lui {
 	public:
 		void start(void(*)(), void(*)(), void(*)(sf::Event));
 		Form* createForm();
-		sf::RenderWindow renderWindow;
+		sf::RenderWindow* renderWindow = NULL;
 		bool blockRender = false;
+		bool standartWindow = true;
 	private:
 		bool leftMouseState = false;
 		std::vector<Form*> luiForms;

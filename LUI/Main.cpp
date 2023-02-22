@@ -1,4 +1,6 @@
 ﻿#include "LUI.h"
+sf::RenderWindow *globalRenderWindow = new sf::RenderWindow;
+
 
 lui::LUI ui;
 lui::Form* myForm;
@@ -6,9 +8,11 @@ lui::Button button;
 lui::Button button2;
 lui::TextField textField;
 lui::Slider slider;
+lui::Label label;
 
 
-
+using namespace std;
+using namespace sf;
 
 void Button1C() {
 	button.zIndex++;
@@ -24,8 +28,8 @@ void Button2C() {
 void Start() {
 	myForm = ui.createForm();
 	myForm->setTitleText("Hi! This is Form!");
-	myForm->setFlag("FORM_IS_WINDOW", true);
-	myForm->setSize(sf::Vector2f(1000, 700));
+	//myForm->setFlag("FORM_IS_WINDOW", true);
+	myForm->setSize(sf::Vector2f(500, 700));
 
 
 
@@ -37,8 +41,12 @@ void Start() {
 	button2.attachEvent(Button2C, lui::Events::CLICK);
 
 	textField.initialization(sf::Vector2f(100, 30), sf::Vector2f(20, 50), "print", myForm);
+	label.initialization(Vector2f(30, 30), Vector2f(20, 120), "Hi", myForm);
+	label.sf_text.setCharacterSize(15);
 
 	slider.initialization(sf::Vector2f(100, 6), sf::Vector2f(30, 30), myForm);
+
+
 }
 
 
@@ -52,6 +60,7 @@ void Update() {
 
 int main()
 {
+	ui.renderWindow = globalRenderWindow;
 	ui.start(Start, Update, Control);
 	return 0;
 }

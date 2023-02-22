@@ -14,6 +14,7 @@ namespace lui {
 	class Component;
 	class Button;
 	class TextField;
+	class Label;
 
 	static int CountForms = 0;
 	bool PointInRect(sf::Vector2i point, sf::Vector2i rectA, sf::Vector2i rectB);
@@ -130,13 +131,24 @@ namespace lui {
 	};
 
 
+	class Label : public Component {
+	public:
+		void draw();
+		void initialization(sf::Vector2f size, sf::Vector2f position, std::string text, Form* attachToForm);
+		sf::Text sf_text;
+	private:
+		std::string text;
+		sf::Color backColor = sf::Color(0,0,0,0);
+	};
+
+
 	class Form {
 	public:
 		typedef void(Form::* ykaz)();
 		//void closeApp() { exit(0); }
 		Form() {
 			std::cout << "form create " << id << "\n";
-			closeButton.initialization(sf::Vector2f(20, 20), sf::Vector2f(size.x - 22, 2), "X", this);
+			closeButton.initialization(sf::Vector2f(15, 15), sf::Vector2f(size.x - 20, 5), "X", this);
 			closeButton.attachEvent(reinterpret_cast<void(*)()>(closeAppAdapter), lui::Events::CLICK);
 		}
 		Form(sf::RenderWindow* renderWindow);
@@ -185,6 +197,14 @@ namespace lui {
 			return Resources::getInstance()->getColor(colorStyle, id);
 		}
 
+		bool getTitleCloseButton() const { return f_TitleCloseButton; }
+		bool getTitleResizeButton() const { return f_TitleResizeButton; }
+		bool getTitleMinimizeButton() const { return f_TitleMinimizeButton; }
+		void setTitleCloseButton(bool value) { f_TitleCloseButton = value; }
+		void setTitleResizeButton(bool value) { f_TitleResizeButton = value; }
+		void setTitleMinimizeButton(bool value) { f_TitleMinimizeButton = value; }
+
+
 	private:
 		lui::Button closeButton;
 
@@ -200,7 +220,7 @@ namespace lui {
 		int id = ++CountForms;
 		std::string titleText = "";
 		sf::Vector2f position = sf::Vector2f(0, 0);
-		sf::Vector2f size = sf::Vector2f(800, 600);
+		sf::Vector2f size = sf::Vector2f(1000, 700);
 		short transparency = 255;
 
 
@@ -218,8 +238,8 @@ namespace lui {
 		bool f_Title = true;
 
 		bool f_TitleContols = false;
-		bool f_TitleCloseButton = true;
-		bool f_TitleResizeButton = true;
+		bool f_TitleCloseButton = false;
+		bool f_TitleResizeButton = false;
 		bool f_TitleMinimizeButton = false;
 
 		bool f_TitlePick = true;
@@ -227,7 +247,7 @@ namespace lui {
 
 
 	};
-	
+
 }
 
 

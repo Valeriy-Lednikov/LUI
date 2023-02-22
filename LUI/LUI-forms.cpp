@@ -59,7 +59,7 @@ lui::Form::Form(sf::RenderWindow* renderWindow)
 void lui::Form::draw()
 {
 	sf::RectangleShape mainR(size);
-	sf::RectangleShape titleR(sf::Vector2f(size.x, 20));
+	sf::RectangleShape titleR(sf::Vector2f(size.x, 25));
 	mainR.setFillColor(sf::Color(128, 128, 128, transparency));
 	titleR.setFillColor(sf::Color(64, 64, 64, transparency));
 	mainR.setPosition(sf::Vector2f(position));
@@ -74,11 +74,12 @@ void lui::Form::draw()
 	textTitle.setPosition(sf::Vector2f(position.x + 10, position.y));
 	textTitle.setFillColor(sf::Color(255, 255, 255, transparency));
 
-	sf::CircleShape triangle(10, 3);
-	triangle.setPosition(renderWindow->getSize().x - 30, renderWindow->getSize().y- 30); // устанавливаем начальную позицию справа от круга
-	triangle.setFillColor(sf::Color::Blue); // устанавливаем цвет треугольника - синий
-	renderWindow->draw(triangle);
-
+	if (f_TitleContols) {
+		sf::CircleShape triangle(10, 3);
+		triangle.setPosition(renderWindow->getSize().x - 30, renderWindow->getSize().y - 30); // устанавливаем начальную позицию справа от круга
+		triangle.setFillColor(sf::Color::Blue); // устанавливаем цвет треугольника - синий
+		renderWindow->draw(triangle);
+	}
 
 
 
@@ -94,6 +95,9 @@ void lui::Form::draw()
 	}
 	//render components ---------------------------------------------------------
 	for (int i = 0; i < components.size(); i++) {
+		if (components[i]->id == closeButton.id && !f_TitleCloseButton) {
+			continue;
+		}
 		components[i]->draw();
 	}
 
@@ -171,59 +175,53 @@ void lui::Form::update(sf::Event event)
 	//###########################################################################################################
 
 	for (int i = components.size() - 1; i >= 0; i--) {
+
+		if (components[i]->id == closeButton.id && !f_TitleCloseButton) {
+			continue;
+		}
+
 		sf::Vector2i currentComponentPosition = sf::Vector2i(components[i]->position);
 		sf::Vector2i currentComponentSize = sf::Vector2i(components[i]->size);
 
-
-		//standat
 		if (PointInRect(sf::Mouse::getPosition(*renderWindow), currentComponentPosition, currentComponentPosition + currentComponentSize)) {
 			if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left) {
 				executeEventComponent(lui::Events::PRESS, components[i]);
 
-				if (dynamic_cast<Button*>(components[i]))
-				{
-					if (!dynamic_cast<Button*>(components[i])->isToggle) {
-						focus = components[i];
-						dynamic_cast<Button*>(components[i])->state = true;
-					}
+				if (auto* button = dynamic_cast<Button*>(components[i]); button != nullptr && !button->isToggle) {
+					focus = components[i];
+					button->state = true;
 				}
 
-				if (dynamic_cast<TextField*>(components[i]))
-				{
+				if (dynamic_cast<TextField*>(components[i])) {
 					focus = components[i];
 				}
 				return;
-				
 			}
-			if (event.type == sf::Event::MouseButtonReleased && event.mouseButton.button == sf::Mouse::Left && focus == components[i]) {
-				if (dynamic_cast<Button*>(components[i]))
-				{
-					if (!dynamic_cast<Button*>(components[i])->isToggle) {
-						executeEventComponent(lui::Events::RELEASE, components[i]);
-						dynamic_cast<Button*>(components[i])->state = false;
-						focus = NULL;
-					}
+			else if (event.type == sf::Event::MouseButtonReleased && event.mouseButton.button == sf::Mouse::Left && focus == components[i]) {
+				if (auto* button = dynamic_cast<Button*>(components[i]); button != nullptr && !button->isToggle) {
+					executeEventComponent(lui::Events::RELEASE, components[i]);
+					button->state = false;
+					focus = nullptr;
 				}
-
-				if (dynamic_cast<TextField*>(components[i]))
-				{
+				if (dynamic_cast<TextField*>(components[i])) {
 					focus = components[i];
 				}
+
 				executeEventComponent(lui::Events::CLICK, components[i]);
 				return;
 			}
 		}
-		if (event.type == sf::Event::MouseButtonReleased && event.mouseButton.button == sf::Mouse::Left && focus == components[i]) {
+		else if (event.type == sf::Event::MouseButtonReleased && event.mouseButton.button == sf::Mouse::Left && focus == components[i]) {
 			executeEventComponent(lui::Events::RELEASE, components[i]);
-			if (dynamic_cast<Button*>(components[i]))
-			{
-				dynamic_cast<Button*>(components[i])->state = false;
-				focus = NULL;
+
+			if (auto* button = dynamic_cast<Button*>(components[i]); button != nullptr) {
+				button->state = false;
 			}
-			if (dynamic_cast<TextField*>(components[i]))
-			{
-				focus = NULL;
+
+			if (dynamic_cast<TextField*>(components[i])) {
+				focus = nullptr;
 			}
+
 			return;
 		}
 		//#######
@@ -236,21 +234,19 @@ void lui::Form::update(sf::Event event)
 
 
 		//######################################################################################
-		if (dynamic_cast<TextField*>(components[i])) {
-			TextField* tf = dynamic_cast<TextField*>(components[i]);
-
-			if (event.type == sf::Event::TextEntered && focus == components[i])
-			{
-				std::string TSting = tf->text.getString();
-				if (event.text.unicode != 8)
-					tf->text.setString(tf->text.getString() + event.text.unicode);
+		if (auto* textField = dynamic_cast<TextField*>(components[i]))
+		if (textField != nullptr) {
+			if (event.type == sf::Event::TextEntered && focus == components[i]) {
+				std::string currentText = textField->text.getString();
+				if (event.text.unicode != 8) {
+					textField->text.setString(textField->text.getString() + event.text.unicode);
+				}
 				else {
-					if (!TSting.empty()) {
-						TSting.pop_back();
-						tf->text.setString(TSting);
+					if (!currentText.empty()) {
+						currentText.pop_back();
+						textField->text.setString(currentText);
 					}
 				}
-				//return;
 			}
 		}
 	}
@@ -280,6 +276,7 @@ void lui::Form::setTitleText(std::string text)
 void lui::Form::setSize(sf::Vector2f size)
 {
 	this->size = size;
+	closeButton.position = sf::Vector2f(size.x - 20, 5);
 }
 
 sf::Vector2f lui::Form::getSize()
@@ -620,13 +617,13 @@ void lui::TextField::draw()
 
 	sf::Vector2i Center = sf::Vector2i((position.x), (position.y + size.y / 2));
 	if (text.getString() == "") {
-		Center = sf::Vector2i(Center.x + 5, (Center.y - Resources::getInstance()->getMaxHeightFont(0)/4));
+		Center = sf::Vector2i(Center.x + 5, (Center.y - Resources::getInstance()->getMaxHeightFont(0) / 4));
 		backgroundText.setPosition(Center.x, Center.y);
 		this->attachToForm->renderWindow->draw(backgroundText);
 	}
 	else {
 		if (text.getGlobalBounds().width < size.x - 10) {
-			Center = sf::Vector2i(Center.x + 5, (Center.y - Resources::getInstance()->getMaxHeightFont(0)/4));
+			Center = sf::Vector2i(Center.x + 5, (Center.y - Resources::getInstance()->getMaxHeightFont(0) / 4));
 			text.setPosition(Center.x, Center.y);
 			this->attachToForm->renderWindow->draw(text);
 		}
@@ -685,7 +682,7 @@ void lui::Slider::draw()
 
 	sf::CircleShape controllBall(size.y);
 	controllBall.setFillColor(sf::Color::Red);
-	controllBall.setPosition(position.x + size.x / 2, position.y + size.y/2 - controllBall.getRadius());
+	controllBall.setPosition(position.x + size.x / 2, position.y + size.y / 2 - controllBall.getRadius());
 	this->attachToForm->renderWindow->draw(controllBall);
 }
 
@@ -695,4 +692,28 @@ void lui::Slider::initialization(sf::Vector2f size, sf::Vector2f position, Form*
 	this->position = position;
 	this->attachToForm = attachToForm;
 	attachToForm->attachComponent(this);
+}
+
+void lui::Label::draw()
+{
+	sf::RectangleShape box;
+	box.setFillColor(backColor);
+	box.setPosition(position);
+	box.setSize(sf::Vector2f(sf_text.getGlobalBounds().width, sf_text.getGlobalBounds().height));
+
+	sf_text.setFillColor(sf::Color::Black);
+	sf_text.setString(text);
+	this->attachToForm->renderWindow->draw(sf_text);
+}
+
+void lui::Label::initialization(sf::Vector2f size, sf::Vector2f position, std::string text, Form* attachToForm)
+{
+	this->sf_text.setFont(Resources::getInstance()->getFontByID(0));
+	this->sf_text.setPosition(position);
+	this->sf_text.setCharacterSize(10);
+	this->size = size;
+	this->position = position;
+	this->attachToForm = attachToForm;
+	attachToForm->attachComponent(this);
+	this->text = text;
 }

@@ -127,7 +127,7 @@ namespace lui {
 	public:
 		void draw();
 		void initialization(sf::Vector2f size, sf::Vector2f position, Form* attachToForm);
-
+		
 	};
 
 
@@ -136,9 +136,10 @@ namespace lui {
 		void draw();
 		void initialization(sf::Vector2f size, sf::Vector2f position, std::string text, Form* attachToForm);
 		sf::Text sf_text;
+		sf::Color backColor = sf::Color(0,0,0,0);
 	private:
 		std::string text;
-		sf::Color backColor = sf::Color(0,0,0,0);
+		
 	};
 
 

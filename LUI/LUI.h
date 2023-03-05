@@ -7,8 +7,7 @@
 #include <bitset>
 #include <Windows.h>
 #include "LUI-Resources.h";
-
-
+#include <random>
 using namespace sf;
 
 namespace lui {
@@ -26,4 +25,20 @@ namespace lui {
 		void render();
 		void updateControll(sf::Event event);
 	};
+
+
+	static sf::Color RandomColor() {
+		std::random_device rd;
+		std::mt19937 gen(rd());
+		std::uniform_int_distribution<int> dis(0, 255);
+
+		return sf::Color(dis(gen), dis(gen), dis(gen), 255);
+	}
+	static sf::Color RandomColorA() {
+		std::random_device rd;
+		std::mt19937 gen(rd());
+		std::uniform_int_distribution<int> dis(0, 255);
+
+		return sf::Color(dis(gen), dis(gen), dis(gen), dis(gen));
+	}
 }

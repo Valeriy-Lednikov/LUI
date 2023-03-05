@@ -617,13 +617,13 @@ void lui::TextField::draw()
 
 	sf::Vector2i Center = sf::Vector2i((position.x), (position.y + size.y / 2));
 	if (text.getString() == "") {
-		Center = sf::Vector2i(Center.x + 5, (Center.y - Resources::getInstance()->getMaxHeightFont(0) / 4));
+		Center = sf::Vector2i(Center.x + 5, (Center.y - Resources::getInstance()->getMaxHeightFont(0, text.getCharacterSize()) / 4));
 		backgroundText.setPosition(Center.x, Center.y);
 		this->attachToForm->renderWindow->draw(backgroundText);
 	}
 	else {
 		if (text.getGlobalBounds().width < size.x - 10) {
-			Center = sf::Vector2i(Center.x + 5, (Center.y - Resources::getInstance()->getMaxHeightFont(0) / 4));
+			Center = sf::Vector2i(Center.x + 5, (Center.y - Resources::getInstance()->getMaxHeightFont(0, text.getCharacterSize()) / 4));
 			text.setPosition(Center.x, Center.y);
 			this->attachToForm->renderWindow->draw(text);
 		}
@@ -696,13 +696,21 @@ void lui::Slider::initialization(sf::Vector2f size, sf::Vector2f position, Form*
 
 void lui::Label::draw()
 {
+	sf_text.setFillColor(sf::Color::Black);
+	sf_text.setString(text);
+	sf_text.setOrigin(sf::Vector2f(0, -sf_text.getGlobalBounds().height));
+	sf_text.setPosition(sf::Vector2f(position.x, position.y - Resources::getInstance()->getMaxHeightFont(0, sf_text.getCharacterSize())));
+
 	sf::RectangleShape box;
 	box.setFillColor(backColor);
 	box.setPosition(position);
-	box.setSize(sf::Vector2f(sf_text.getGlobalBounds().width, sf_text.getGlobalBounds().height));
 
-	sf_text.setFillColor(sf::Color::Black);
-	sf_text.setString(text);
+	box.setSize(sf::Vector2f(
+		sf_text.getCharacterSize() /2 * sf_text.getString().getSize(),
+		Resources::getInstance()->getMaxHeightFont(0, sf_text.getCharacterSize()))
+	);
+
+	this->attachToForm->renderWindow->draw(box);
 	this->attachToForm->renderWindow->draw(sf_text);
 }
 
@@ -710,7 +718,7 @@ void lui::Label::initialization(sf::Vector2f size, sf::Vector2f position, std::s
 {
 	this->sf_text.setFont(Resources::getInstance()->getFontByID(0));
 	this->sf_text.setPosition(position);
-	this->sf_text.setCharacterSize(10);
+	this->sf_text.setCharacterSize(20);
 	this->size = size;
 	this->position = position;
 	this->attachToForm = attachToForm;

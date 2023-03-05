@@ -15,9 +15,7 @@ using namespace std;
 using namespace sf;
 
 void Button1C() {
-	button.zIndex++;
-	myForm->updateComponents();
-	button.text.setString(textField.text.getString());
+	label.backColor = lui::RandomColor();
 }
 void Button2C() {
 	button2.zIndex ++;
@@ -42,7 +40,7 @@ void Start() {
 
 	textField.initialization(sf::Vector2f(100, 30), sf::Vector2f(20, 50), "print", myForm);
 	label.initialization(Vector2f(30, 30), Vector2f(20, 120), "Hi", myForm);
-	label.sf_text.setCharacterSize(15);
+	label.sf_text.setCharacterSize(30);
 
 	slider.initialization(sf::Vector2f(100, 6), sf::Vector2f(30, 30), myForm);
 

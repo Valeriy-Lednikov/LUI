@@ -52,11 +52,19 @@ namespace lui {
 		sf::Font& getFontByID(int id) {
 			return fonts.at(id).font;
 		}
-		double getMaxHeightFont(int id) {
+		double getMaxHeightFont(int id, int chSize) {
 			sf::Text text;
+			text.setCharacterSize(chSize);
 			text.setFont(Resources::getInstance()->getFontByID(0));
 			text.setString("aAbBcCdDeEfgGhHiIjJKlLmMnNyY1{[<!&?:*¹;");
 			return text.getGlobalBounds().height;
+		}
+		double getMaxWidthFont(int id, int chSize) {
+			sf::Text text;
+			text.setCharacterSize(chSize);
+			text.setFont(Resources::getInstance()->getFontByID(0));
+			text.setString("G");
+			return text.getGlobalBounds().width;
 		}
 
 

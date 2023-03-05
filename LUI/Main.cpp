@@ -49,7 +49,11 @@ void Start() {
 
 
 void Control(sf::Event event) {
+	if (event.type == sf::Event::LostFocus)
+		cout << "Out Focus\n";
 
+	if (event.type == sf::Event::GainedFocus)
+		cout << "In Focus\n";
 }
 
 void Update() {
@@ -59,7 +63,15 @@ void Update() {
 int main()
 {
 	ui.renderWindow = globalRenderWindow;
+	ui.autoUpdate = false;
+	ui.autoClear = false;
 	ui.start(Start, Update, Control);
+
+	while (1) {
+		ui.renderWindow->clear();
+		ui.update();
+	}
+
 	return 0;
 }
 

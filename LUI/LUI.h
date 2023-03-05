@@ -19,11 +19,19 @@ namespace lui {
 		sf::RenderWindow* renderWindow = NULL;
 		bool blockRender = false;
 		bool standartWindow = true;
+		bool autoUpdate = true;
+		bool autoClear = true;
+		void update();
+		void (*userUpd)();
+		void (*userControll)(sf::Event);
+
 	private:
+		
+
+
 		bool leftMouseState = false;
 		std::vector<Form*> luiForms;
 		void render();
-		void updateControll(sf::Event event);
 	};
 
 

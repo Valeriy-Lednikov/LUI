@@ -29,7 +29,23 @@ namespace lui {
 			SetWindowLong(hwnd, GWL_EXSTYLE,new_style);
 
 		usrStart();
-		while (renderWindow->isOpen())
+
+		this->userUpd = usrUpdate;
+		this->userControll = usrControl;
+		
+		if (autoUpdate) {
+			while (renderWindow->isOpen()) {
+				update();
+			}
+		}
+
+	}
+
+
+	
+	void LUI::update()
+	{
+		if (renderWindow->isOpen())
 		{
 
 			Event event;
@@ -46,11 +62,11 @@ namespace lui {
 					);
 				}
 
-				updateControll(event);
-				usrControl(event);
+				userControll(event);
 				for (int i = 0; i < luiForms.size(); i++) {
 					luiForms.at(i)->update(event);
 				}
+
 
 
 				if (event.type == Event::Closed)
@@ -65,15 +81,18 @@ namespace lui {
 				}
 			}
 			if (!blockRender) {
-				renderWindow->clear(Color(0, 0, 0));
-				usrUpdate();
+				if (autoClear) {
+					renderWindow->clear(Color(0, 0, 0));
+				}
+				userUpd;
 				render();
 
 				renderWindow->display();
 			}
 		}
-
 	}
+
+
 
 	Form* LUI::createForm()
 	{
@@ -82,28 +101,15 @@ namespace lui {
 		luiForms.push_back(form);
 		return form;
 	}
-	
+
+
 	void LUI::render()
 	{
-		//std::cout << "size vector - " << luiForms.size() << "\n";
 		for (int i = 0; i < luiForms.size(); i++) {
 			luiForms.at(i)->draw(); 
-			//std::cout << "render\n";
 		}
 	}
-	void LUI::updateControll(sf::Event event)
-	{
-		//if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)) {
-		//	leftMouse = true;
-		//}
-		//else {
-		//	if(leftMouse = true){
-		//		false;
-		//	}
-		//}
-		////if (PointInRect(sf::Mouse::getPosition(*Window), Components[i]->Position, Components[i]->Position + Components[i]->Size)) {
 
-	}
 
 
 }

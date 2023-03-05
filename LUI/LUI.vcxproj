@@ -169,6 +169,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="LUI-forms.h" />
+    <ClInclude Include="LUI-render.h" />
     <ClInclude Include="LUI.h" />
     <ClInclude Include="LUI-Resources.h" />
   </ItemGroup>

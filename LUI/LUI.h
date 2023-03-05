@@ -8,6 +8,7 @@
 #include <Windows.h>
 #include "LUI-Resources.h";
 #include <random>
+#include "LUI-render.h"
 using namespace sf;
 
 namespace lui {
@@ -21,12 +22,20 @@ namespace lui {
 		bool standartWindow = true;
 		bool autoUpdate = true;
 		bool autoClear = true;
+		bool autoDisplay = true;
+		bool drawFPSinTitle = true;
 		void update();
 		void (*userUpd)();
 		void (*userControll)(sf::Event);
 
 	private:
 		
+		sf::Clock clock;
+		float elapsed_time = 0;
+		int frame_count = 0;
+		float avg_fps = 0;
+		int avg = 1;
+
 
 
 		bool leftMouseState = false;

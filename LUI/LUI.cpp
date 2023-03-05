@@ -47,6 +47,21 @@ namespace lui {
 	{
 		if (renderWindow->isOpen())
 		{
+			if (drawFPSinTitle) {
+				frame_count++;
+				elapsed_time = clock.getElapsedTime().asSeconds();
+				if (elapsed_time >= 1)
+				{
+					avg_fps = frame_count / elapsed_time;
+					std::string a = "" + std::to_string(avg_fps);
+
+					renderWindow->setTitle(sf::String(a));
+					frame_count = 0;
+					elapsed_time = 0;
+					clock.restart();
+				}
+			}
+
 
 			Event event;
 			while (renderWindow->pollEvent(event))
@@ -86,8 +101,9 @@ namespace lui {
 				}
 				userUpd;
 				render();
-
-				renderWindow->display();
+				if (autoDisplay) {
+					renderWindow->display();
+				}
 			}
 		}
 	}

@@ -1,5 +1,10 @@
 ﻿#include "LUI.h"
 sf::RenderWindow *globalRenderWindow = new sf::RenderWindow;
+sf::View camera;
+sf::Vector2f cameraPos = { 0.f, 0.f };
+float cameraSpeed = 5.f;
+sf::RectangleShape box;
+
 
 
 lui::LUI ui;
@@ -49,6 +54,25 @@ void Start() {
 
 
 void Control(sf::Event event) {
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
+		cameraPos.y -= cameraSpeed;
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
+		cameraPos.y += cameraSpeed;
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+		cameraPos.x -= cameraSpeed;
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
+		cameraPos.x += cameraSpeed;
+
+	// Set the new camera position
+	camera.setCenter(cameraPos);
+
+
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+	{
+		
+	}
+
+
 	if (event.type == sf::Event::LostFocus)
 		cout << "Out Focus\n";
 
@@ -57,19 +81,44 @@ void Control(sf::Event event) {
 }
 
 void Update() {
-
+	
 }
 
 int main()
 {
+
+	box.setFillColor(sf::Color::Blue);
+	box.setPosition(Vector2f(20, 20));
+	box.setSize(Vector2f(30, 30));
+
+
 	ui.renderWindow = globalRenderWindow;
 	ui.autoUpdate = false;
 	ui.autoClear = false;
+	ui.autoDisplay = false;
 	ui.start(Start, Update, Control);
+	
 
-	while (1) {
+
+	camera.setCenter(sf::Vector2f(ui.renderWindow->getSize().x, ui.renderWindow->getSize().y)/2.f);
+	camera.setSize(sf::Vector2f(ui.renderWindow->getSize().x, ui.renderWindow->getSize().y));
+
+
+
+
+	while (ui.renderWindow->isOpen()) {
+
+		
+
 		ui.renderWindow->clear();
+		ui.renderWindow->setView(camera);
+
 		ui.update();
+
+
+		lui::RenderInWindowCords(globalRenderWindow, &box);
+		ui.renderWindow->display();
+		
 	}
 
 	return 0;

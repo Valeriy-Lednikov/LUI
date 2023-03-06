@@ -1,7 +1,5 @@
 ﻿#include "LUI.h"
 sf::RenderWindow *globalRenderWindow = new sf::RenderWindow;
-sf::View camera;
-sf::Vector2f cameraPos = { 0.f, 0.f };
 float cameraSpeed = 5.f;
 sf::RectangleShape box;
 
@@ -55,16 +53,16 @@ void Start() {
 
 void Control(sf::Event event) {
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
-		cameraPos.y -= cameraSpeed;
+		 ui.cameraPos.y -= cameraSpeed;
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
-		cameraPos.y += cameraSpeed;
+		ui.cameraPos.y += cameraSpeed;
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
-		cameraPos.x -= cameraSpeed;
+		ui.cameraPos.x -= cameraSpeed;
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
-		cameraPos.x += cameraSpeed;
+		ui.cameraPos.x += cameraSpeed;
 
 	// Set the new camera position
-	camera.setCenter(cameraPos);
+	ui.camera.setCenter(ui.cameraPos);
 
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
@@ -99,19 +97,11 @@ int main()
 	ui.start(Start, Update, Control);
 	
 
-
-	camera.setCenter(sf::Vector2f(ui.renderWindow->getSize().x, ui.renderWindow->getSize().y)/2.f);
-	camera.setSize(sf::Vector2f(ui.renderWindow->getSize().x, ui.renderWindow->getSize().y));
-
-
-
-
 	while (ui.renderWindow->isOpen()) {
 
 		
 
 		ui.renderWindow->clear();
-		ui.renderWindow->setView(camera);
 
 		ui.update();
 

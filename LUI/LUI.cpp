@@ -28,7 +28,15 @@ namespace lui {
 		LONG_PTR new_style = WS_SYSMENU;
 			SetWindowLong(hwnd, GWL_EXSTYLE,new_style);
 
+
+			camera.setCenter(sf::Vector2f(renderWindow->getSize().x, renderWindow->getSize().y) / 2.f);
+			camera.setSize(sf::Vector2f(renderWindow->getSize().x, renderWindow->getSize().y));
+			cameraPos = sf::Vector2f(renderWindow->getSize().x, renderWindow->getSize().y) / 2.f;
+
 		usrStart();
+
+
+
 
 		this->userUpd = usrUpdate;
 		this->userControll = usrControl;
@@ -67,15 +75,20 @@ namespace lui {
 			while (renderWindow->pollEvent(event))
 			{
 				if (event.type == sf::Event::Resized) {
-					float w = static_cast<float>(event.size.width);
-					float h = static_cast<float>(event.size.height);
-					renderWindow->setView(
-						sf::View(
-							sf::Vector2f(w / 2.0, h / 2.0),
-							sf::Vector2f(w, h)
-						)
-					);
+					float w = static_cast<int>(event.size.width);
+					float h = static_cast<int>(event.size.height);
+					double roundedW = std::ceil(w / 2) * 2;
+					double roundedH = std::ceil(h / 2) * 2;
+					camera.setSize(roundedW, roundedH);
+					camera.setCenter(roundedW /2, roundedH /2);
+					renderWindow->setSize(Vector2u(roundedW, roundedH));
+					std::cout << "W " << roundedW << " H " << roundedH << "\n";
+					
 				}
+				if (event.type == sf::Event::Closed) {
+					renderWindow->close();
+				}
+
 
 				userControll(event);
 				for (int i = 0; i < luiForms.size(); i++) {
@@ -84,18 +97,11 @@ namespace lui {
 
 
 
-				if (event.type == Event::Closed)
-					renderWindow->close();
-				if (event.type == Event::KeyPressed) {
-
-					if (event.key.code == sf::Keyboard::Escape)
-					{
-						renderWindow->close();
-					}
-
-				}
 			}
 			if (!blockRender) {
+				if (autoSetView) {
+					renderWindow->setView(camera);
+				}
 				if (autoClear) {
 					renderWindow->clear(Color(0, 0, 0));
 				}

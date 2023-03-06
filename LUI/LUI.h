@@ -9,6 +9,7 @@
 #include "LUI-Resources.h";
 #include <random>
 #include "LUI-render.h"
+#include <cmath>
 using namespace sf;
 
 namespace lui {
@@ -20,16 +21,20 @@ namespace lui {
 		sf::RenderWindow* renderWindow = NULL;
 		bool blockRender = false;
 		bool standartWindow = true;
+
+		bool autoSetView = true;
 		bool autoUpdate = true;
 		bool autoClear = true;
 		bool autoDisplay = true;
 		bool drawFPSinTitle = true;
+
 		void update();
 		void (*userUpd)();
 		void (*userControll)(sf::Event);
 
+		sf::View camera;
+		sf::Vector2f cameraPos = { 0.f, 0.f };
 	private:
-		
 		sf::Clock clock;
 		float elapsed_time = 0;
 		int frame_count = 0;

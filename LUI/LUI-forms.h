@@ -6,6 +6,7 @@
 #include <SFML/Window/Mouse.hpp>
 #include <cstdint> // для uintptr_t
 #include "LUI-Resources.h";
+#include "LUI-render.h"
 
 
 

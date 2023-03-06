@@ -78,16 +78,16 @@ void lui::Form::draw()
 		sf::CircleShape triangle(10, 3);
 		triangle.setPosition(renderWindow->getSize().x - 30, renderWindow->getSize().y - 30); // устанавливаем начальную позицию справа от круга
 		triangle.setFillColor(sf::Color::Blue); // устанавливаем цвет треугольника - синий
-		renderWindow->draw(triangle);
+		lui::RenderInWindowCords(renderWindow, &triangle);
 	}
 
 
 
 	if (renderWindow != NULL) {
-		renderWindow->draw(mainR);
-		renderWindow->draw(titleR);
+		lui::RenderInWindowCords(renderWindow, &mainR);
+		lui::RenderInWindowCords(renderWindow, &titleR);
 		if (f_Title) {
-			renderWindow->draw(textTitle);
+			lui::RenderInWindowCords(renderWindow, &textTitle);
 		}
 	}
 	else {
@@ -475,12 +475,12 @@ void lui::Button::draw()
 	sf::RectangleShape fon(sf::Vector2f(size.x, size.y));
 	fon.setPosition(position.x, position.y);
 	fon.setFillColor(sf::Color(0, 0, 0));
-	this->attachToForm->renderWindow->draw(fon);
+	lui::RenderInWindowCords(this->attachToForm->renderWindow, &fon);
 
 	fon = sf::RectangleShape(sf::Vector2f(size.x - 4, size.y - 4));
 	fon.setPosition(position.x + 3, position.y + 3);
 	fon.setFillColor(backgroundColor);
-	this->attachToForm->renderWindow->draw(fon);
+	lui::RenderInWindowCords(this->attachToForm->renderWindow, &fon);
 
 	text.setCharacterSize(fontSize);
 	text.setFillColor(fontColor);
@@ -491,7 +491,7 @@ void lui::Button::draw()
 		text.setPosition(Center.x - 1, Center.y - 1);
 	}
 
-	this->attachToForm->renderWindow->draw(text);
+	lui::RenderInWindowCords(this->attachToForm->renderWindow, &text);
 
 
 	sf::Color ColorA = sf::Color(255, 255, 255);
@@ -506,24 +506,24 @@ void lui::Button::draw()
 	line = sf::RectangleShape(sf::Vector2f(size.x - 2, 1)); //Up Up Up
 	line.setFillColor(ColorA);
 	line.setPosition(position.x + 1, position.y + 1);
-	this->attachToForm->renderWindow->draw(line);
+	lui::RenderInWindowCords(this->attachToForm->renderWindow, &line);
 
 	line = sf::RectangleShape(sf::Vector2f(size.y - 2, 1)); //left Up Up
 	line.setFillColor(ColorA);
 	line.setPosition(position.x + 2, position.y + 1);
 	line.rotate(90);
-	this->attachToForm->renderWindow->draw(line);
+	lui::RenderInWindowCords(this->attachToForm->renderWindow, &line);
 
 	line = sf::RectangleShape(sf::Vector2f(size.x - 4, 1)); //Up down Up
 	line.setFillColor(ColorA);
 	line.setPosition(position.x + 2, position.y + 2);
-	this->attachToForm->renderWindow->draw(line);
+	lui::RenderInWindowCords(this->attachToForm->renderWindow, &line);
 
 	line = sf::RectangleShape(sf::Vector2f(size.y - 4, 1)); //left down Up
 	line.setFillColor(ColorA);
 	line.setPosition(position.x + 3, position.y + 2);
 	line.rotate(90);
-	this->attachToForm->renderWindow->draw(line);
+	lui::RenderInWindowCords(this->attachToForm->renderWindow, &line);
 
 	////////////////////////////////////////////////////////////////////////////////////
 
@@ -531,13 +531,13 @@ void lui::Button::draw()
 	line.setFillColor(ColorB);
 	line.setPosition(position.x - 1 + size.x, position.y - 1 + size.y);
 	line.rotate(180);
-	this->attachToForm->renderWindow->draw(line);
+	lui::RenderInWindowCords(this->attachToForm->renderWindow, &line);
 
 	line = sf::RectangleShape(sf::Vector2f(size.x - 5, 1));
 	line.setFillColor(ColorB);
 	line.setPosition(position.x - 2 + size.x, position.y - 2 + size.y);
 	line.rotate(180);
-	this->attachToForm->renderWindow->draw(line);
+	lui::RenderInWindowCords(this->attachToForm->renderWindow, &line);
 
 
 
@@ -545,14 +545,14 @@ void lui::Button::draw()
 	line.setFillColor(ColorB);
 	line.setPosition(position.x - 2 + size.x, position.y - 1 + size.y);
 	line.rotate(270);
-	this->attachToForm->renderWindow->draw(line);
+	lui::RenderInWindowCords(this->attachToForm->renderWindow, &line);
 
 
 	line = sf::RectangleShape(sf::Vector2f(size.y - 4, 1));
 	line.setFillColor(ColorB);
 	line.setPosition(position.x - 3 + size.x, position.y - 1 + size.y);
 	line.rotate(270);
-	this->attachToForm->renderWindow->draw(line);
+	lui::RenderInWindowCords(this->attachToForm->renderWindow, &line);
 
 
 	/*if(activateFuntion != NULL)
@@ -607,25 +607,25 @@ void lui::TextField::draw()
 	else {
 		fon.setFillColor(sf::Color(0, 0, 0));
 	}
-	this->attachToForm->renderWindow->draw(fon);
+	lui::RenderInWindowCords(this->attachToForm->renderWindow, &fon);
 
 	fon.setPosition(position.x + 1, position.y + 1);
 	fon.setSize(sf::Vector2f(size.x - 2, size.y - 2));
 	fon.setFillColor(sf::Color(64, 128, 128));
-	this->attachToForm->renderWindow->draw(fon);
+	lui::RenderInWindowCords(this->attachToForm->renderWindow, &fon);
 
 
 	sf::Vector2i Center = sf::Vector2i((position.x), (position.y + size.y / 2));
 	if (text.getString() == "") {
 		Center = sf::Vector2i(Center.x + 5, (Center.y - Resources::getInstance()->getMaxHeightFont(0, text.getCharacterSize()) / 4));
 		backgroundText.setPosition(Center.x, Center.y);
-		this->attachToForm->renderWindow->draw(backgroundText);
+		lui::RenderInWindowCords(this->attachToForm->renderWindow, &backgroundText);
 	}
 	else {
 		if (text.getGlobalBounds().width < size.x - 10) {
 			Center = sf::Vector2i(Center.x + 5, (Center.y - Resources::getInstance()->getMaxHeightFont(0, text.getCharacterSize()) / 4));
 			text.setPosition(Center.x, Center.y);
-			this->attachToForm->renderWindow->draw(text);
+			lui::RenderInWindowCords(this->attachToForm->renderWindow, &text);
 		}
 	}
 }
@@ -671,19 +671,19 @@ void lui::Slider::draw()
 	sf::RectangleShape fon(sf::Vector2f(size.x - 2 * radiusBall, size.y));
 	fon.setFillColor(sf::Color(30, 60, 50, 255));
 	fon.setPosition(position.x + radiusBall, position.y);
-	this->attachToForm->renderWindow->draw(fon);
+	lui::RenderInWindowCords(this->attachToForm->renderWindow, &fon);
 
 	sf::CircleShape ball(size.y / 2);
 	ball.setFillColor(sf::Color(30, 60, 50, 255));
 	ball.setPosition(position.x, position.y);
-	this->attachToForm->renderWindow->draw(ball);
+	lui::RenderInWindowCords(this->attachToForm->renderWindow, &ball);
 	ball.setPosition(position.x + size.x - size.y, position.y);
-	this->attachToForm->renderWindow->draw(ball);
+	lui::RenderInWindowCords(this->attachToForm->renderWindow, &ball);
 
 	sf::CircleShape controllBall(size.y);
 	controllBall.setFillColor(sf::Color::Red);
 	controllBall.setPosition(position.x + size.x / 2, position.y + size.y / 2 - controllBall.getRadius());
-	this->attachToForm->renderWindow->draw(controllBall);
+	lui::RenderInWindowCords(this->attachToForm->renderWindow, &controllBall);
 }
 
 void lui::Slider::initialization(sf::Vector2f size, sf::Vector2f position, Form* attachToForm)
@@ -710,8 +710,8 @@ void lui::Label::draw()
 		Resources::getInstance()->getMaxHeightFont(0, sf_text.getCharacterSize()))
 	);
 
-	this->attachToForm->renderWindow->draw(box);
-	this->attachToForm->renderWindow->draw(sf_text);
+	lui::RenderInWindowCords(this->attachToForm->renderWindow, &box);
+	lui::RenderInWindowCords(this->attachToForm->renderWindow, &sf_text);
 }
 
 void lui::Label::initialization(sf::Vector2f size, sf::Vector2f position, std::string text, Form* attachToForm)

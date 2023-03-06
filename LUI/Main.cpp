@@ -106,7 +106,7 @@ int main()
 		ui.update();
 
 
-		lui::RenderInWindowCords(globalRenderWindow, &box);
+		globalRenderWindow->draw(box);
 		ui.renderWindow->display();
 		
 	}

@@ -63,4 +63,12 @@ namespace lui {
 
 		return sf::Color(dis(gen), dis(gen), dis(gen), dis(gen));
 	}
+
+	static void getCodeTimeVoid(void* aa()) {
+		auto start = std::chrono::high_resolution_clock::now();
+		aa;
+		auto end = std::chrono::high_resolution_clock::now();
+		auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start);
+		std::cout << "time: " << duration.count() << " ns" << std::endl;
+	}
 }

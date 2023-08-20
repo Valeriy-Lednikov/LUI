@@ -106,7 +106,7 @@ int main()
 		ui.update();
 
 
-		globalRenderWindow->draw(box);
+		//globalRenderWindow->draw(box);
 		ui.renderWindow->display();
 		
 	}

@@ -95,17 +95,15 @@ namespace lui {
 					luiForms.at(i)->update(event);
 				}
 
-
-
 			}
 			if (!blockRender) {
-				if (autoSetView) {
-					renderWindow->setView(camera);
-				}
 				if (autoClear) {
 					renderWindow->clear(Color(0, 0, 0));
 				}
-				userUpd;
+				userUpd();
+				if (autoSetView) {
+					renderWindow->setView(camera);
+				}
 				render();
 				if (autoDisplay) {
 					renderWindow->display();

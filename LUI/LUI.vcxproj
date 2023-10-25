@@ -157,6 +157,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="LUI-Component\button\LUI-Button.cpp" />
     <ClCompile Include="LUI-forms.cpp" />
     <ClCompile Include="LUI-MacroPixels.cpp" />
     <ClCompile Include="LUI.cpp" />
@@ -170,6 +171,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="LUI-AdditionalsFunctions.h" />
+    <ClInclude Include="LUI-Component.h" />
+    <ClInclude Include="LUI-Component\button\LUI-Button.h" />
     <ClInclude Include="LUI-forms.h" />
     <ClInclude Include="LUI-MacroPixels.h" />
     <ClInclude Include="LUI-render.h" />

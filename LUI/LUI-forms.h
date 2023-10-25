@@ -4,9 +4,10 @@
 #include <Windows.h>
 #include <vector>
 #include <SFML/Window/Mouse.hpp>
-#include <cstdint> // для uintptr_t
+#include <cstdint> 
 #include "LUI-Resources.h";
 #include "LUI-render.h"
+
 
 
 
@@ -92,8 +93,6 @@ namespace lui {
 	};
 
 
-
-
 	class Button :public Component {
 	public:
 		void draw();
@@ -109,6 +108,7 @@ namespace lui {
 		bool isToggle = false;
 		int fontSize = 13;
 	};
+
 
 
 	class TextField : public Component {

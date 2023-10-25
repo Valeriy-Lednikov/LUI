@@ -4,34 +4,37 @@
 
 namespace lui {
 
-	void LUI::start(void(*usrStart)(),void(*usrUpdate)(), void(*usrControl)(sf::Event))
+	void LUI::start(void(*usrStart)(), void(*usrUpdate)(), void(*usrControl)(sf::Event))
 	{
+		sf::RenderWindow* tempRenderWindow = RenderController::getInstance()->renderWindow;
 
-		if (renderWindow == NULL) {
+
+		std::cout << "2 " << tempRenderWindow << "\n";
+		if (tempRenderWindow == NULL) {
 			std::cout << "Render Window not setup\n";
 			return;
 		}
 
 		Resources::getInstance()->initialization();
-		sf::ContextSettings settings;
-		settings.antialiasingLevel = 2;
-		if (standartWindow) {
-			renderWindow->create(sf::VideoMode(800, 600), "LUI", sf::Style::Default, settings);
-		}
-		else
-		{
-			renderWindow->create(sf::VideoMode(800, 600), "LUI", sf::Style::None, settings);
-		}
-		renderWindow->setFramerateLimit(100);
+		//sf::ContextSettings settings;
+		//settings.antialiasingLevel = 2;
+		//if (standartWindow) {
+		//	tempRenderWindow->create(sf::VideoMode(800, 600), "LUI", sf::Style::Default, settings);
+		//}
+		//else
+		//{
+		//	tempRenderWindow->create(sf::VideoMode(800, 600), "LUI", sf::Style::None, settings);
+		//}
+		//tempRenderWindow->setFramerateLimit(100);
 
-		HWND hwnd = renderWindow->getSystemHandle();
-		LONG_PTR new_style = WS_SYSMENU;
-			SetWindowLong(hwnd, GWL_EXSTYLE,new_style);
+		//HWND hwnd = tempRenderWindow->getSystemHandle();
+		//LONG_PTR new_style = WS_SYSMENU;
+		//SetWindowLong(hwnd, GWL_EXSTYLE, new_style);
 
 
-			camera.setCenter(sf::Vector2f(renderWindow->getSize().x, renderWindow->getSize().y) / 2.f);
-			camera.setSize(sf::Vector2f(renderWindow->getSize().x, renderWindow->getSize().y));
-			cameraPos = sf::Vector2f(renderWindow->getSize().x, renderWindow->getSize().y) / 2.f;
+		camera.setCenter(sf::Vector2f(tempRenderWindow->getSize().x, tempRenderWindow->getSize().y) / 2.f);
+		camera.setSize(sf::Vector2f(tempRenderWindow->getSize().x, tempRenderWindow->getSize().y));
+		cameraPos = sf::Vector2f(tempRenderWindow->getSize().x, tempRenderWindow->getSize().y) / 2.f;
 
 		usrStart();
 
@@ -40,9 +43,9 @@ namespace lui {
 
 		this->userUpd = usrUpdate;
 		this->userControll = usrControl;
-		
+
 		if (autoUpdate) {
-			while (renderWindow->isOpen()) {
+			while (tempRenderWindow->isOpen()) {
 				update();
 			}
 		}
@@ -50,10 +53,11 @@ namespace lui {
 	}
 
 
-	
+
 	void LUI::update()
 	{
-		if (renderWindow->isOpen())
+		sf::RenderWindow* tempRenderWindow = RenderController::getInstance()->renderWindow;
+		if (tempRenderWindow->isOpen())
 		{
 			if (drawFPSinTitle) {
 				frame_count++;
@@ -63,7 +67,7 @@ namespace lui {
 					avg_fps = frame_count / elapsed_time;
 					std::string a = "" + std::to_string(avg_fps);
 
-					renderWindow->setTitle(sf::String(a));
+					tempRenderWindow->setTitle(sf::String(a));
 					frame_count = 0;
 					elapsed_time = 0;
 					clock.restart();
@@ -72,7 +76,7 @@ namespace lui {
 
 
 			Event event;
-			while (renderWindow->pollEvent(event))
+			while (tempRenderWindow->pollEvent(event))
 			{
 				if (event.type == sf::Event::Resized) {
 					float w = static_cast<int>(event.size.width);
@@ -80,13 +84,13 @@ namespace lui {
 					double roundedW = std::ceil(w / 2) * 2;
 					double roundedH = std::ceil(h / 2) * 2;
 					camera.setSize(roundedW, roundedH);
-					camera.setCenter(roundedW /2, roundedH /2);
-					renderWindow->setSize(Vector2u(roundedW, roundedH));
+					camera.setCenter(roundedW / 2, roundedH / 2);
+					tempRenderWindow->setSize(Vector2u(roundedW, roundedH));
 					std::cout << "W " << roundedW << " H " << roundedH << "\n";
-					
+
 				}
 				if (event.type == sf::Event::Closed) {
-					renderWindow->close();
+					tempRenderWindow->close();
 				}
 
 
@@ -98,15 +102,15 @@ namespace lui {
 			}
 			if (!blockRender) {
 				if (autoClear) {
-					renderWindow->clear(Color(0, 0, 0));
+					tempRenderWindow->clear(Color(0, 0, 0));
 				}
 				userUpd();
 				if (autoSetView) {
-					renderWindow->setView(camera);
+					tempRenderWindow->setView(camera);
 				}
 				render();
 				if (autoDisplay) {
-					renderWindow->display();
+					tempRenderWindow->display();
 				}
 			}
 		}
@@ -116,8 +120,9 @@ namespace lui {
 
 	Form* LUI::createForm()
 	{
+		sf::RenderWindow* tempRenderWindow = RenderController::getInstance()->renderWindow;
 		Form* form = new Form;
-		form->setRenderWindow(renderWindow);
+		form->setRenderWindow(tempRenderWindow);
 		luiForms.push_back(form);
 		return form;
 	}
@@ -126,7 +131,7 @@ namespace lui {
 	void LUI::render()
 	{
 		for (int i = 0; i < luiForms.size(); i++) {
-			luiForms.at(i)->draw(); 
+			luiForms.at(i)->draw();
 		}
 	}
 

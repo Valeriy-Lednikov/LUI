@@ -27,6 +27,9 @@
     <ClCompile Include="LUI-MacroPixels.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
+    <ClCompile Include="LUI-Component\button\LUI-Button.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -53,6 +56,12 @@
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="LUI-AdditionalsFunctions.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="LUI-Component.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="LUI-Component\button\LUI-Button.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>

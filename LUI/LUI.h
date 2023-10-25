@@ -14,11 +14,37 @@ using namespace sf;
 
 namespace lui {
 
+
+	class RenderController {
+	private:
+		static RenderController* instance; // Статический указатель на единственный экземпляр
+
+		// Приватный конструктор, чтобы предотвратить создание экземпляров извне
+		RenderController() {}
+
+	public:
+		// Метод для получения экземпляра RenderController
+		static RenderController* getInstance() {
+			if (instance == nullptr) {
+				instance = new RenderController();
+			}
+			return instance;
+		}
+
+		sf::RenderWindow* renderWindow;
+
+	
+	};
+
+
+
+
 	class LUI {
 	public:
+
 		void start(void(*)(), void(*)(), void(*)(sf::Event));
 		Form* createForm();
-		sf::RenderWindow* renderWindow = NULL;
+
 		bool blockRender = false;
 		bool standartWindow = true;
 

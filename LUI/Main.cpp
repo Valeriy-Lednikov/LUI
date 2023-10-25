@@ -1,5 +1,5 @@
-﻿#include "LUI.h"
-sf::RenderWindow *globalRenderWindow = new sf::RenderWindow;
+﻿#pragma once
+#include "LUI.h"
 float cameraSpeed = 5.f;
 sf::RectangleShape box;
 
@@ -9,6 +9,9 @@ lui::LUI ui;
 lui::Form* myForm;
 lui::Button button;
 lui::Button button2;
+lui::Button button3;
+
+
 lui::TextField textField;
 lui::Slider slider;
 lui::Label label;
@@ -32,6 +35,8 @@ void Start() {
 	//myForm->setFlag("FORM_IS_WINDOW", true);
 	myForm->setSize(sf::Vector2f(500, 700));
 
+	
+
 
 
 	button.initialization(sf::Vector2f(100, 60), sf::Vector2f(200, 80), "Button 1", myForm);
@@ -46,6 +51,8 @@ void Start() {
 	label.sf_text.setCharacterSize(30);
 
 	slider.initialization(sf::Vector2f(100, 6), sf::Vector2f(30, 30), myForm);
+
+	button3.position = sf::Vector2f(300, 110);
 
 
 }
@@ -90,24 +97,28 @@ int main()
 	box.setSize(Vector2f(30, 30));
 
 
-	ui.renderWindow = globalRenderWindow;
 	ui.autoUpdate = false;
 	ui.autoClear = false;
 	ui.autoDisplay = false;
-	ui.start(Start, Update, Control);
-	
 
-	while (ui.renderWindow->isOpen()) {
+
+	sf::RenderWindow& tempRenderWindow = *lui::RenderController::getInstance()->renderWindow;
+	tempRenderWindow.create(sf::VideoMode(800, 600), "LUI", sf::Style::Default);
+
+	ui.start(Start, Update, Control);
+
+	 
+	while (tempRenderWindow.isOpen()) {
 
 		
 
-		ui.renderWindow->clear();
+		tempRenderWindow.clear();
 
 		ui.update();
 
 
 		//globalRenderWindow->draw(box);
-		ui.renderWindow->display();
+		tempRenderWindow.display();
 		
 	}
 
